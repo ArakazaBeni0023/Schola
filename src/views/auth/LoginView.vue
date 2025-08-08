@@ -85,7 +85,7 @@ export default {
 </template>
 
 <style scoped>
-.form{
+.auth-form {
     padding: 3rem 1rem;
     border-radius: 15px;
     border: 2px solid var(--color-primary);
@@ -94,8 +94,7 @@ export default {
 
 .inline {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: space-between;align-items: center;
 }
 
 .input {

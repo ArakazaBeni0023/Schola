@@ -36,7 +36,7 @@ export default {
                 <input v-model="input.value" :type="input.type" required class="input" :placeholder="input.placeholder">
             </div>
             <div class="btns-group">
-                <button  class="cancel-btn" @click="$emit('close')">Fermer</button>
+                <button class="cancel-btn" @click="$emit('close')">Fermer</button>
                 <button type="submit" class="submit-btn">Envoyer</button>
             </div>
         </form>
@@ -44,7 +44,7 @@ export default {
 </template>
 
 <style scoped>
-.form{
+.auth-form {
     padding: 3rem 1rem;
     border-radius: 15px;
     border: 2px solid var(--color-primary);

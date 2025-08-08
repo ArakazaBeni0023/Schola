@@ -35,7 +35,7 @@ export default {
 </template>
 
 <style scoped>
-.form {
+.auth-form {
     padding: 3rem 1rem;
     border-radius: 15px;
     border: 2px solid var(--color-primary);
