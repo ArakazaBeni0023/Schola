@@ -22,7 +22,7 @@ export default {
         <div class="brand">
             <div class="brand-logo"></div>
             <h1 class="header-title">
-                Konegted
+                Schola
             </h1>
             <button @click="logout()" class="logout-btn bi-box-arrow-right"></button>
         </div>

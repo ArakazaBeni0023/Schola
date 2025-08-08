@@ -29,7 +29,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
-  document.title = to.meta?.name ?? 'Acama'
+  document.title = to.meta?.name ?? 'Schola'
 });
 
 export default router

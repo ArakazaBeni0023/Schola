@@ -7,14 +7,10 @@ import store from './store';
 import VCalendar from 'v-calendar';
 import 'v-calendar/style.css';
 
-
-
-
-
 import "@fontsource/poppins"
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
 import '@/assets/icons/et-line-font/et-line-font.css';
+
 import '@/assets/css/root.css';
 import '@/assets/css/common.css';
 import '@/assets/css/custom.css';
