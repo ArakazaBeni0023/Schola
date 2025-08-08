@@ -12,17 +12,17 @@
     /* overflow: hidden; */
 }
 
-.form-container .form{
+.form-container .auth-form {
     width: 45%;
     background: var(--color-surface);
     border: 2px solid var(--color-primary);
     padding: 3rem 1rem;
     gap: 1rem;
     border-radius: 15px;
-    box-shadow: var(--shadow-3);
+    box-shadow: var(--shadow-4);
 }
 
-.form-container .form .logo{
+.form-container .auth-form .logo {
     width: 120px;
     height: 120px;
     background-color: var(--hover-lw);
@@ -30,75 +30,76 @@
     margin: auto;
 }
 
-.form .form-group {
+.auth-form .form-group {
     gap: 0.5rem;
     color: var(--color-secondary);
 }
 
-.form .form-group label{
+.auth-form .form-group label {
     font-size: 14px;
 }
 
-.form-container .form .form-group .input{
-    border: 2px solid var(--color-secondary);
+.form-container .auth-form .form-group .input {
+    all: unset;
+    border: 2px solid var(--hover-lw);
     padding: .8rem;
     border-radius: .5rem;
     font-family: 'Poppins', sans-serif;
     animation: anim-item .5s;
     font-size: 12px;
-    
+    transition: all .5s ease;
 }
 
-.form-container .form .form-group .input:hover,
-.form-container .form .form-group .input:focus{
-    border: 2px solid var(--color-secondary);
+.form-container .auth-form .form-group .input:hover,
+.form-container .auth-form .form-group .input:focus {
+    border: 2px solid var(--color-primary);
 }
 
-.form-container .form .forgot{
+.form-container .auth-form .forgot {
     color: var(--color-secondary);
     text-align: end;
     cursor: pointer;
     transition: all .5s ease;
 }
 
-.form-container .form .forgot:hover{
+.form-container .auth-form .forgot:hover {
     color: var(--color-primary-dark);
     text-decoration: underline;
 }
 
-.form-container .form .btns-group{
-    gap:1rem;
+.form-container .auth-form .btns-group {
+    gap: 1rem;
 }
 
-.form .btns-group button{
+.auth-form .btns-group button {
     border: none;
     font-family: 'Poppins', sans-serif;
     font-size: 12px;
     padding: 1rem;
     border-radius: 50px;
     width: 100%;
-    transition:text-decoration .5s ease, background .5s ease;
+    transition: text-decoration .5s ease, background .5s ease;
     cursor: pointer;
     margin-top: 2rem;
     /* animation: anim-item .5s; */
 }
 
-.form .btns-group .submit-btn{
+.auth-form .btns-group .submit-btn {
     background: var(--color-primary);
     color: var(--color-text-light);
     /* animation: anim-item .5s; */
 }
 
-.form .btns-group .submit-btn:hover{
+.auth-form .btns-group .submit-btn:hover {
     background: var(--color-secondary);
 }
 
-.form .btns-group .cancel-btn{
+.auth-form .btns-group .cancel-btn {
     background: var(--hover-lw);
     color: var(--color-primary);
 }
 
-.form .btns-group .cancel-btn:hover{
+.auth-form .btns-group .cancel-btn:hover {
     background: var(--color-accent);
 }
 
@@ -127,7 +128,7 @@
     left: 3px;
 }
 
-.check-box-input span{
+.check-box-input span {
     color: var(--color-secondary);
 }
 
@@ -142,7 +143,7 @@
 }
 
 @media (max-width:768px) {
-    .form-container .form{
+    .form-container .auth-form {
         width: 100%;
     }
 }

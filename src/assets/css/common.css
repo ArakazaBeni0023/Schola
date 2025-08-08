@@ -13,8 +13,8 @@
 .global-container .left-side,
 /* form */
 .form-container,
-.form-container .form,
-.form-container .form .form-group,
+.form-container .auth-form,
+.form-container .auth-form .form-group,
 .btns-group,
 .check-box-input,
 .btns-group,
@@ -146,8 +146,8 @@
 /* for all containe-fluid */
 .global-container .left-side,
 /* form */
-.form-container .form,
-.form-container .form .form-group,
+.form-container .auth-form,
+.form-container .auth-form .form-group,
 /* Grades Comp */
 .table-container-fluid,
 /* Registration form */

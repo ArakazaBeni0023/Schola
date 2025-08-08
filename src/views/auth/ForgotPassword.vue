@@ -17,7 +17,7 @@ export default {
 
 <template>
     <div class="form-container">
-        <form class="form" @submit.prevent="resetPassword">
+        <form class="auth-form" @submit.prevent="resetPassword">
             <div class="logo">
                 <img src="" alt="">
             </div>

@@ -26,7 +26,7 @@ export default {
 
 <template>
     <div class="form-container">
-        <form class="form" @submit.prevent="login">
+        <form class="auth-form" @submit.prevent="login">
             <div class="logo">
                 <img src="" alt="">
             </div>
