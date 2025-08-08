@@ -143,7 +143,7 @@
 }
 
 @media (max-width:768px) {
-    .form-container .auth-form {
+    .auth-form {
         width: 100%;
     }
 }
