@@ -12,7 +12,7 @@
     /* overflow: hidden; */
 }
 
-.form-container .auth-form {
+.auth-form {
     width: 45%;
     background: var(--color-surface);
     border: 2px solid var(--color-primary);
