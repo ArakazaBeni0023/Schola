@@ -15,11 +15,8 @@
 .auth-form {
     width: 45%;
     background: var(--color-surface);
-    border: 2px solid var(--color-primary);
-    padding: 3rem 1rem;
     gap: 1rem;
-    border-radius: 15px;
-    box-shadow: var(--shadow-4);
+    
 }
 
 .form-container .auth-form .logo {

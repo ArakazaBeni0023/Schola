@@ -1,16 +1,26 @@
 :root {
-    --color-primary: #146EB4;         /*Couleur principale – titres, logo, header */
-    --color-primary-light: #5DA2DE;   /* Variante claire – hover, fonds secondaires */
-    --color-primary-dark: #0F4C80;    /* Variante foncée – footer, boutons actifs */
+    /*Couleur principale – titres, logo, header */
+    --color-primary: #146EB4;
+    /* Variante claire – hover, fonds secondaires */
+    --color-primary-light: #5DA2DE;
+    /* Variante foncée – footer, boutons actifs */
+    --color-primary-dark: #0F4C80;
 
-    --color-secondary: #0F8ED4;       /* Couleur secondaire – liens, icônes, accents */
-    --color-accent: #6ac6ff;          /* Accent – boutons "call to action", alertes */
+    /* Couleur secondaire – liens, icônes, accents */
+    --color-secondary: #0F8ED4;
+    /* Accent – boutons "call to action", alertes */
+    --color-accent: #6ac6ff;
 
-    --color-background: #F9F9F9;      /* Arrière-plan général du site */
-    --color-surface: #FFFFFF;         /* Cartes, blocs de contenu, modales */
-    --color-text: #146EB4;            /* Texte principal (titres, paragraphes) */
-    --color-text-light: #FFFFFF;      /* Texte clair sur fond foncé (boutons, overlays) */
-    --color-muted: #888888;           /* Texte secondaire – sous-titres, infos discrètes */
+    /* Arrière-plan général du site */
+    --color-background: #F9F9F9;
+    /* Cartes, blocs de contenu, modales */
+    --color-surface: #FFFFFF;
+    /* Texte principal (titres, paragraphes) */
+    --color-text: #146EB4;
+    /* Texte clair sur fond foncé (boutons, overlays) */
+    --color-text-light: #FFFFFF;
+    /* Texte secondaire – sous-titres, infos discrètes */
+    --color-muted: #888888;
 
     --hover-lw: #d6eff7;
     --color-danger: #dc3545;
@@ -38,7 +48,7 @@
 
 ::-webkit-scrollbar-thumb {
     background: var(--color-secondary);
-    transition:background .5s ease;
+    transition: background .5s ease;
     border-radius: 50px;
 
 }

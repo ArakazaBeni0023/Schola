@@ -33,3 +33,12 @@ export default {
         </form>
     </div>
 </template>
+
+<style scoped>
+.form {
+    padding: 3rem 1rem;
+    border-radius: 15px;
+    border: 2px solid var(--color-primary);
+    box-shadow: var(--shadow-4);
+}
+</style>
