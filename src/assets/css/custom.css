@@ -1,0 +1,137 @@
+*,
+*::before,
+*::after {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+a,
+a:hover{
+    all: unset;
+}
+textarea::placeholder,
+input::placeholder{
+    color: var( --color-secondary);
+}
+
+/* select,  */
+/* input[type='text'] */
+/* input[type='email'],
+input[type='password']{
+    all:unset;
+    border: none;
+} */
+
+#app {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body{
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: 'Poppins', sans-serif;
+    /* user-select: none; */
+}
+
+::selection {
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+}
+
+.global-container {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto;
+    overflow: auto;
+    height: 100vh;
+    gap: 1rem;
+}
+
+/* .global-container .left-side .main-title{
+    text-transform: uppercase;
+} */
+
+.global-container .left-side, 
+.global-container .right-side{
+    overflow: auto;
+    height: 100vh;
+}
+
+.global-container .left-side{
+    grid-column: span 8;
+    padding: 2rem .5rem 2rem 0rem;
+    gap: 1rem;
+}
+
+.global-container .right-side{
+    grid-column:span 4;
+    background: var(--color-surface);
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    box-shadow: var(--shadow-4);
+    gap: 2rem;
+    padding: 2rem 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .global-container {
+        grid-template-columns: 1fr;
+        padding-inline-end: .5rem;
+        padding-block-end: 1rem;
+        padding-inline-start: 1rem;
+    }
+
+    .global-container .left-side{
+        grid-column: span 12;
+    }
+
+    .global-container .right-side{
+        grid-column:span 12;
+        border-radius: 15px;
+    }
+}
+
+@media (max-width :468px){
+    .global-container {
+        padding-block-end: 1rem;
+        padding-inline: 1rem;
+    }
+
+    .global-container .left-side{
+    padding: 2rem 0rem;
+}
+
+}
+
+.title {
+    text-transform: uppercase;
+}
+
+.transition-colors {
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.transition-shadow {
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.calendrier{
+    font-family: 'Poppins', sans-serif;
+    width: 100%;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    border-radius: 15px;
+    padding: .5rem;
+}
+
+@keyframes fadeDown {
+    0% {
+        margin-top: -10px;
+    }
+
+    100% {
+        margin-top: 0;
+    }
+}

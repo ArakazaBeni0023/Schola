@@ -1,0 +1,182 @@
+/*--------- display flex */
+/* header comp*/
+.header-main-container,
+.header-main-container .brand,
+.header-main-container .brand .brand-logo,
+.header-main-container .user-block,
+/* welcome comp*/
+.welcome-screen,
+.welcome-screen .brand-photo,
+/* platform */
+.platform-container-fluid .left-side,
+/* for all containe-fluid */
+.global-container .left-side,
+/* form */
+.form-container,
+.form-container .form,
+.form-container .form .form-group,
+.btns-group,
+.check-box-input,
+.btns-group,
+/* Grades Comp */
+.table-container-fluid,
+.table-container-header,
+.table-container-header .stats,
+/* Registration form */
+.container-form,
+.container-form .form,
+/*----------- globa container */
+.global-container .right-side,
+/* Prof Dashboard Comp */
+.dashboard-container-fluid,
+.dashboard-container,
+.dashboard-container .dashboard-item,
+.dashboard-container .dashboard-item .cours-infos,
+/* user management comp */
+.create-user-container,
+/* faculty management comp */
+.facuty-management-container,
+.facuty-management-container-header,
+.faculties-container,
+/* student overview comp */
+.student-overview-container,
+/*----------- calendrier */
+.calendrier,
+.calendrier .cal-header,
+.calendrier .cal-header .switch,
+.calendrier .cal-jour,
+.calendrier .cal-body,
+/* prof dashboard */ 
+.dashboard-container .dashboard-item .cours-infos .text-sm,
+/*----------- notes */
+.notes-header,
+.notes,
+.notes .notes-body,
+.notes .notes-body .note,
+.notes .notes-body .note .note-clickable,
+.notes .notes-body .note .note-clickable .img,
+.notes-adm-container,
+/* UpComing events */
+.schedule,
+.schedule-header,
+.schedule-body,
+.schedule-body .event, 
+/* navbar */
+.links,
+.links .router-links .link,
+.logout-btn {
+    display: flex;
+}
+
+/*--------- align items center */
+/* header comp*/
+.header-main-container .brand,
+.header-main-container .brand .brand-logo,
+/* welcome comp*/
+.welcome-screen,
+.welcome-screen .brand-photo,
+/* form */
+.form-container,
+.check-box-input,
+/* Grades Comp */
+.table-container-header,
+/* user management comp */
+.create-user-container,
+/* faculty management comp */
+.facuty-management-container-header,
+/*----------- calendrier */
+ .calendrier .cal-header,
+ .calendrier .cal-header .switch,
+ /* prof dashboard 
+.dashboard-container .dashboard-item .cours-infos .text-sm, */
+/*----------- notes */
+.notes-header,
+.notes .notes-body .note,
+.notes .notes-body .note .note-clickable,
+.notes .notes-body .note .note-clickable .img,
+/* UpComing events */
+.schedule-header,
+.schedule-body .event, 
+/* navbar */
+.links .router-links .link,
+.logout-btn   {
+    align-items: center;
+}
+
+/*--------- justify content center */
+/* header comp*/
+.header-main-container .brand .brand-logo,
+/* welcome comp*/
+.welcome-screen,
+.welcome-screen .brand-photo,
+/* platformc*/
+/* .platform-container-fluid .left-side,  */
+/* form */
+.form-container,
+/* user management comp */
+.create-user-container,
+/*----------- notes */
+.notes .notes-body .note .note-clickable .img,
+/* navbar */
+.links .router-links .link,
+.logout-btn   {
+   justify-content: center;
+}
+
+/*--------- justify content space-between */
+/* header comp*/
+.header-main-container .user-block,
+/* Prof Dashboard Comp */
+.dashboard-container .dashboard-item .cours-infos,
+/*----------- notes */
+.notes .notes-header,
+/* UpComing events */
+.schedule-header,
+
+/* Grades Comp */
+.table-container-header{
+    justify-content: space-between;
+}
+
+/*---------  flex direction column */
+/* header comp*/
+.header-main-container,
+/* welcome comp*/
+.welcome-screen,
+/* for all containe-fluid */
+.global-container .left-side,
+/* form */
+.form-container .form,
+.form-container .form .form-group,
+/* Grades Comp */
+.table-container-fluid,
+/* Registration form */
+.container-form,
+.container-form .form,
+/*----------- globa container */
+.global-container .right-side,
+/* Prof Dashboard Comp */
+.dashboard-container-fluid,
+.dashboard-container,
+.dashboard-container .dashboard-item,
+/* faculty management comp */
+.facuty-management-container,
+/* .faculties-container, */
+
+/* student overview comp */
+.student-overview-container,
+/*----------- calendrier */
+.calendrier,
+ /* prof dashboard */
+.dashboard-container .dashboard-item .cours-infos .text-sm, 
+/*----------- notes */
+.notes,
+.notes .notes-body,
+.notes-adm-container,
+/* UpComing events */
+.schedule,
+.schedule-body,
+/* navbar */
+.links {
+    flex-direction: column;
+}

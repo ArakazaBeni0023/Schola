@@ -1,0 +1,113 @@
+
+/*----------- notes */
+.notes {
+    font-family:'Poppins', sans-serif;
+    gap: 1rem;
+    position: relative;
+}
+
+.add-btn {
+    font-family:'Poppins', sans-serif;
+    padding: 0.5rem .6rem;
+    border-radius: 10px;
+    font-size: 12px;
+    background: none;
+    background-color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    color: var(--color-text-light);
+    transition: background .5s ease;
+    cursor: pointer;
+}
+
+.add-btn:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.add-select {
+    background-color: var(--color-primary-dark);
+    color: var(--color-text-light);
+}
+
+.notes .notes-header  .prime{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.notes .notes-header .prime .notes-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    background: var(--color-primary);
+    color: var(--color-text-light);
+    border-radius: 20px;
+    width: 25px;
+    height: 25px;
+    font-size: 13px;
+}
+
+.notes .notes-body {
+    gap: .2rem;
+}
+
+.notes .notes-body .note {
+    cursor: pointer;
+    position: relative;
+    padding: .5rem .5rem;
+    border-radius: 10px;
+    transition: background .5s ease;
+}
+
+.notes .notes-body .note:hover:not(.selected) {
+    background: var(--hover-lw);
+}
+
+.notes .notes-body .note .note-clickable {
+    gap: .5rem;
+    cursor: pointer;
+    position: relative;
+    width: 100%;
+    transition: background .5s ease;
+}
+
+.notes .notes-body .note .note-clickable .img {
+    background: var(--color-primary-light);
+    color: var(--color-text-light);
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+}
+
+.selected {
+    background: var(--hover-lw);
+}
+
+.notes .notes-body .note .note-clickable .note-infos {
+    width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.notes .notes-body .note .note-clickable .note-infos b {
+    font-size: 12px;
+    width: 50%;
+}
+
+.notes .notes-body .note .note-clickable .note-infos p {
+    font-size: 10px;
+    color: var(--color-secondary);
+}
+
+.notes .notes-body .note .dots-btn{
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--color-primary);
+    transition: background .5s ease;
+    border: none;
+    cursor: pointer;
+}
