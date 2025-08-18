@@ -14,9 +14,9 @@
 
 .auth-form {
     width: 45%;
-    background: var(--color-surface);
+    background: var(--color-background);
     gap: 1rem;
-    
+
 }
 
 .form-container .auth-form .logo {
