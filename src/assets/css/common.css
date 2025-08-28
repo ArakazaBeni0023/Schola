@@ -13,8 +13,8 @@
 .global-container .left-side,
 /* form */
 .form-container,
-.form-container .auth-form,
-.form-container .auth-form .form-group,
+.auth-form,
+.auth-form .form-group,
 .btns-group,
 .check-box-input,
 .btns-group,
@@ -40,13 +40,15 @@
 .faculties-container,
 /* student overview comp */
 .student-overview-container,
+/* professor overview comp */
+.prof-overview-container,
 /*----------- calendrier */
 .calendrier,
 .calendrier .cal-header,
 .calendrier .cal-header .switch,
 .calendrier .cal-jour,
 .calendrier .cal-body,
-/* prof dashboard */ 
+/* prof dashboard */
 .dashboard-container .dashboard-item .cours-infos .text-sm,
 /*----------- notes */
 .notes-header,
@@ -60,7 +62,7 @@
 .schedule,
 .schedule-header,
 .schedule-body,
-.schedule-body .event, 
+.schedule-body .event,
 /* navbar */
 .links,
 .links .router-links .link,
@@ -85,9 +87,9 @@
 /* faculty management comp */
 .facuty-management-container-header,
 /*----------- calendrier */
- .calendrier .cal-header,
- .calendrier .cal-header .switch,
- /* prof dashboard 
+.calendrier .cal-header,
+.calendrier .cal-header .switch,
+/* prof dashboard 
 .dashboard-container .dashboard-item .cours-infos .text-sm, */
 /*----------- notes */
 .notes-header,
@@ -96,10 +98,10 @@
 .notes .notes-body .note .note-clickable .img,
 /* UpComing events */
 .schedule-header,
-.schedule-body .event, 
+.schedule-body .event,
 /* navbar */
 .links .router-links .link,
-.logout-btn   {
+.logout-btn {
     align-items: center;
 }
 
@@ -119,8 +121,8 @@
 .notes .notes-body .note .note-clickable .img,
 /* navbar */
 .links .router-links .link,
-.logout-btn   {
-   justify-content: center;
+.logout-btn {
+    justify-content: center;
 }
 
 /*--------- justify content space-between */
@@ -134,7 +136,7 @@
 .schedule-header,
 
 /* Grades Comp */
-.table-container-header{
+.table-container-header {
     justify-content: space-between;
 }
 
@@ -146,8 +148,8 @@
 /* for all containe-fluid */
 .global-container .left-side,
 /* form */
-.form-container .auth-form,
-.form-container .auth-form .form-group,
+.auth-form,
+.auth-form .form-group,
 /* Grades Comp */
 .table-container-fluid,
 /* Registration form */
@@ -165,10 +167,12 @@
 
 /* student overview comp */
 .student-overview-container,
+/* professor overview comp */
+.prof-overview-container,
 /*----------- calendrier */
 .calendrier,
- /* prof dashboard */
-.dashboard-container .dashboard-item .cours-infos .text-sm, 
+/* prof dashboard */
+.dashboard-container .dashboard-item .cours-infos .text-sm,
 /*----------- notes */
 .notes,
 .notes .notes-body,

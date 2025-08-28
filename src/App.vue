@@ -19,7 +19,7 @@ export default {
   },
   methods: {
     checkAuthentication() {
-      const user = localStorage.getItem('rememberedUser');
+      const user = localStorage.getItem('schola.currentUser');
       this.isAuthenticated = !!user;
     },
     handleLoginSuccess() {

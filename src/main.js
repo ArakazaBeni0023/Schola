@@ -14,7 +14,7 @@ import '@/assets/icons/et-line-font/et-line-font.css';
 import '@/assets/css/root.css';
 import '@/assets/css/common.css';
 import '@/assets/css/custom.css';
-import '@/assets/css/form.css';
+import '@/assets/css/auth-form.css';
 import '@/assets/css/table.css';
 import '@/assets/css/modal_custom.css';
 import '@/assets/css/notes.css';

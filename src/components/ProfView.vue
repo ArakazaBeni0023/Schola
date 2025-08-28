@@ -43,8 +43,8 @@ export default {
 
         <div class="right-side">
             <VCalendar class="calendrier" :attributes="attributes" />
-            <UpcomingEvents />
-            <NotesCmp />
+            <UpcomingEvents class="UpCommingEvents" />
+            <NotesCmp class="NotesCmp" />
         </div>
     </div>
 </template>

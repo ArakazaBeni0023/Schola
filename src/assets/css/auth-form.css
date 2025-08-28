@@ -14,9 +14,8 @@
 
 .auth-form {
     width: 45%;
-    background: var(--color-background);
+    background: var(--color-surface);
     gap: 1rem;
-
 }
 
 .form-container .auth-form .logo {
@@ -64,39 +63,39 @@
     text-decoration: underline;
 }
 
-.form-container .auth-form .btns-group {
+.btns-group {
     gap: 1rem;
+    justify-content: space-between;
 }
 
-.auth-form .btns-group button {
+.btns-group button {
     border: none;
+    max-width: 35%;
     font-family: 'Poppins', sans-serif;
     font-size: 12px;
-    padding: 1rem;
+    padding: .8rem;
     border-radius: 50px;
     width: 100%;
     transition: text-decoration .5s ease, background .5s ease;
     cursor: pointer;
     margin-top: 2rem;
-    /* animation: anim-item .5s; */
 }
 
-.auth-form .btns-group .submit-btn {
+.btns-group .submit-btn {
     background: var(--color-primary);
     color: var(--color-text-light);
-    /* animation: anim-item .5s; */
 }
 
-.auth-form .btns-group .submit-btn:hover {
+.btns-group .submit-btn:hover {
     background: var(--color-secondary);
 }
 
-.auth-form .btns-group .cancel-btn {
+.btns-group .cancel-btn {
     background: var(--hover-lw);
     color: var(--color-primary);
 }
 
-.auth-form .btns-group .cancel-btn:hover {
+.btns-group .cancel-btn:hover {
     background: var(--color-accent);
 }
 

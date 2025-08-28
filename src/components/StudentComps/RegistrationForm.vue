@@ -112,17 +112,17 @@ export default {
                 <legend>Informations personnelles</legend>
 
                 <label>Nom *</label>
-                <input v-model="studentForm.nom" type="text" required class="input" />
+                <input v-model.trim="studentForm.nom" type="text" required class="input" />
 
                 <label>Prénom *</label>
-                <input v-model="studentForm.prenom" type="text" required class="input" />
+                <input v-model.trim="studentForm.prenom" type="text" required class="input" />
 
                 <label>Email *</label>
-                <input v-model="studentForm.email" type="email" required class="input" />
+                <input v-model.trim="studentForm.email" type="email" required class="input" />
 
                 <label>Date de naissance *</label>
 
-                <input v-model="studentForm.dateNaissance" type="date" required class="input" />
+                <input v-model.trim="studentForm.dateNaissance" type="date" required class="input" />
 
                 <label>Sexe *</label>
                 <select v-model="studentForm.sexe" required class="select-input">
@@ -132,10 +132,10 @@ export default {
                 </select>
 
                 <label>Téléphone</label>
-                <input v-model="studentForm.telephone" type="tel" class="input" />
+                <input v-model.trim="studentForm.telephone" type="tel" class="input" />
 
                 <label>Mot de passe *</label>
-                <input v-model="studentForm.motDePasse" type="password" required class="input"
+                <input v-model.trim="studentForm.motDePasse" type="password" required class="input"
                     placeholder="min 8 caractères, 1 majuscule, 1 chiffre" />
             </fieldset>
 

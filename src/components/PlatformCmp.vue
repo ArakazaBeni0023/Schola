@@ -40,6 +40,7 @@ export default {
     padding: 1rem .5rem;
     gap: .5rem;
     position: relative;
+    /* align-items: center; */
 }
 
 /*--------------- main container */
@@ -51,7 +52,7 @@ export default {
     width: 100%;
 }
 
-@media (max-width :468px) {
+@media (max-width :480px) {
     .platform-container-fluid {
         grid-template-columns: 0% 1fr;
         grid-template-rows: 60px 1fr;
@@ -62,10 +63,11 @@ export default {
         grid-column-start: 3;
         grid-row-start: 3;
         grid-row-end: 4;
-        padding: 1rem;
-        background: unset;
+        /* padding: .5rem 1rem 1.5rem 1rem; */
+        background: var(--color-primary-dark);
         z-index: 110;
         border-top: 1px solid var(--color-muted);
+        align-items: none;
     }
 
     .platform-container-fluid .main-container {

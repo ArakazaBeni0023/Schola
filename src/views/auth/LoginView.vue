@@ -1,52 +1,34 @@
 <script>
 export default {
+    name: "LoginView",
     data() {
         return {
-            email: '',
-            password: '',
+            email: "",
+            password: "",
             rememberMe: false,
-            users: [
-                { email: 'etudiant@test.com', password: 'Test123!', role: 'etudiant' },
-                { email: 'prof@test.com', password: 'Test123!', role: 'professeur' },
-                { email: 'admin@test.com', password: 'Test123!', role: 'admin' },
-            ],
-            currentUser: null
         };
-    },
-    mounted() {
-        const remembered = localStorage.getItem('rememberedUser');
-        if (remembered) {
-            const user = JSON.parse(remembered);
-            this.email = user.email;
-            this.role = user.role;
-            this.rememberMe = true;
-        }
     },
     methods: {
         login() {
-            const user = this.users.find(u =>
-                u.email === this.email && u.password === this.password
+            const storedUsers = JSON.parse(localStorage.getItem("schola.users")) || [{ id: "s_12bsxdftThGkkH", nom:"admin", prenom:"", email: "admin@schola.com", password:"Test123!", role:"admin"} ];
+
+            const user = storedUsers.find(
+                u => u.email === this.email && u.password === this.password
             );
 
             if (user) {
-                this.currentUser = user;
-
                 if (this.rememberMe) {
-                    localStorage.setItem('rememberedUser', JSON.stringify({ email: user.email, role: user.role }));
+                    localStorage.setItem("schola.currentUser", JSON.stringify(user));
                 } else {
-                    localStorage.removeItem('rememberedUser');
+                    sessionStorage.setItem("schola.currentUser", JSON.stringify(user));
                 }
 
-                // this.addNotification('Connexion réussie');
-                this.$emit('login-success');
+                alert("Login successful");
+                this.$emit("login-success");
             } else {
-                // this.addNotification('Email ou mot de passe incorrect');
+                alert("Invalid email or password ");
             }
-        },
-        /*
-        addNotification(message) {
-            alert(message);
-        } */
+        }
     }
 };
 </script>
@@ -61,17 +43,18 @@ export default {
 
             <div class="form-group">
                 <label>Email</label>
-                <input type="email" v-model="email" required placeholder="Votre adresse email" class="input" />
+                <input type="email" v-model.trim="email" required placeholder="Votre adresse email" class="input" />
             </div>
 
             <div class="form-group">
                 <label>Mot de passe</label>
-                <input type="password" v-model="password" required placeholder="Votre mot de passe" class="input" />
+                <input type="password" v-model.trim="password" required placeholder="Votre mot de passe"
+                    class="input" />
             </div>
 
             <div class="inline">
                 <label class="check-box-input">
-                    <input type="checkbox" v-model="rememberMe" />
+                    <input type="checkbox" v-model.trim="rememberMe" />
                     Se souvenir de moi
                 </label>
                 <p class="forgot" @click="$emit('forgot-password')">Mot de passe oublié ?</p>
@@ -94,7 +77,8 @@ export default {
 
 .inline {
     display: flex;
-    justify-content: space-between;align-items: center;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .input {

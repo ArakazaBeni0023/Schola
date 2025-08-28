@@ -24,7 +24,7 @@ export default {
             <h1 class="form-title">Réinitialisation du mot de passe</h1>
             <div class="form-group">
                 <label class="label">Email</label>
-                <input v-model="resetEmail" type="email" required class="input" placeholder="Votre email">
+                <input v-model.trim="resetEmail" type="email" required class="input" placeholder="Votre email">
             </div>
             <div class="btns-group">
                 <button type="button" class="cancel-btn">Annuler</button>

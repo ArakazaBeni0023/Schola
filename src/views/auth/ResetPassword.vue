@@ -33,7 +33,7 @@ export default {
             <h1 class="form-title">Réinitialisation du mot de passe</h1>
             <div class="form-group" v-for="input in formInputs" :key="input">
                 <label class="label">{{ input.label }}</label>
-                <input v-model="input.value" :type="input.type" required class="input" :placeholder="input.placeholder">
+                <input v-model.trim="input.value" :type="input.type" required class="input" :placeholder="input.placeholder">
             </div>
             <div class="btns-group">
                 <button class="cancel-btn" @click="$emit('close')">Fermer</button>

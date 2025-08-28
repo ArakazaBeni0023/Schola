@@ -42,10 +42,15 @@ export default {
 
             <!-- Grades -->
             <GradesCmp />
+
+            <!----------------------- displaying for mobile only -->
+            <VCalendar class="calendrier" :attributes="attributes" />
+            <UpcomingEvents  class="UpCommingEvents"/>
+
         </div>
         <div class="right-side">
             <VCalendar class="calendrier" :attributes="attributes" />
-            <UpcomingEvents />
+            <UpcomingEvents class="UpCommingEvents" />
         </div>
     </div>
 </template>

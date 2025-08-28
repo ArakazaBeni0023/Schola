@@ -18,13 +18,12 @@ export default {
         };
     },
     created() {
-        const savedUser = localStorage.getItem('rememberedUser');
+        const savedUser = localStorage.getItem('schola.currentUser');
         if (savedUser) {
             const userData = JSON.parse(savedUser);
 
             this.currentUserRole = userData.role;
         } else {
-
             this.$router.push('/auth/login');
         }
     }
@@ -32,6 +31,7 @@ export default {
 </script>
 
 <template>
+    <!---->
     <PlatformCmp v-if="currentUserRole">
         <AdministrationView v-if="currentUserRole === 'admin'" />
         <ProfView v-else-if="currentUserRole === 'professeur'" />

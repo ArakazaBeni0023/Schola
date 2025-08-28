@@ -68,7 +68,7 @@ export default {
     }
 }
 
-@media (max-width :468px) {
+@media (max-width :480px) {
     .welcome-screen .brand-name {
         width: 37%;
     }

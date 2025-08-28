@@ -6,6 +6,7 @@ export default {
         var currentPath = router.currentRoute.value.path
         return { currentPath }
     },
+
     name: 'NavBar',
     data() {
         return {
@@ -16,7 +17,7 @@ export default {
                     iconFill: 'bi-grid-fill',
                     title: 'Accueil'
                 },
-                {
+                /*{
                     link: '/etudiant',
                     icon: 'bi-mortarboard',
                     iconFill: 'bi-chat-square-text-fill',
@@ -27,18 +28,18 @@ export default {
                     icon: 'bi-people',
                     iconFill: 'bi-people-fill',
                     title: 'Students'
-                },
-                /*{
-                   link: '/settings',
-                   icon: 'bi-gear',
-                   iconFill: 'bi-gear-fill',
-                   title: 'Par.'
-               },*/
+                },*/
                 {
                     link: '/notifications',
                     icon: 'bi-bell',
                     iconFill: 'bi-bell-fill',
                     title: 'Notifs'
+                },
+                {
+                    link: '/settings',
+                    icon: 'bi-gear',
+                    iconFill: 'bi-gear-fill',
+                    title: 'Paramètres'
                 },
             ],
             currentUser: null
@@ -48,7 +49,7 @@ export default {
     methods: {
         logout() {
             this.currentUser = null;
-            localStorage.removeItem('rememberedUser');
+            localStorage.removeItem('schola.currentUser');
             window.location.reload()
         },
     },
@@ -58,9 +59,7 @@ export default {
         if (rememberedUser) {
             this.currentUser = JSON.parse(rememberedUser)
         }
-
     },
-
 }
 </script>
 
@@ -82,12 +81,14 @@ export default {
 <style scoped>
 .links {
     background: var(--color-primary-dark);
+    /* height: 50%; */
     width: 90%;
     gap: .5rem;
     border-radius: 50px;
     padding-block: 1.5rem;
     padding-inline: .5rem;
     justify-content: space-between;
+    /* border: 1px solid #000; */
 }
 
 .links .brand-logo {
@@ -222,12 +223,13 @@ export default {
     }
 }
 
-@media (max-width :468px) {
+@media (max-width :480px) {
     .links {
         width: 100%;
+        height: 100%;
         justify-content: space-between;
         flex-direction: unset;
-        padding-block: .5rem;
+        padding-block: .8rem;
         padding-inline: 1.5rem;
     }
 
@@ -239,6 +241,7 @@ export default {
         flex-direction: initial;
         width: 100%;
         justify-content: space-between;
+        padding: 0;
     }
 
     .links .router-links .link {

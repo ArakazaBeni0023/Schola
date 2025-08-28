@@ -4,22 +4,31 @@ import HomeView from '../views/Pages/HomeView.vue'
 const routes = [
   {
     path: '/',
-    name: 'home',
+    name: 'Accueil | ',
+    meta: {
+    },
     component: HomeView
   },
   {
     path: '/auth/login',
     meta: {
-      name: 'Se connecter |',
+      name: 'Se connecter | ',
     },
     component: () => import('../views/auth/LoginView.vue')
   },
   {
     path: '/notifications',
     meta: {
-      name: 'Notifications|',
+      name: 'Notifications | ',
     },
     component: () => import('../views/Pages/NotificationsView.vue')
+  },
+  {
+    path: '/settings',
+    meta: {
+      name: 'Paramètres | ',
+    },
+    component: () => import('../views/Pages/SettingsView.vue')
   },  
 ]
 
