@@ -5,8 +5,10 @@ export default {
             // Professor data
             selectedCourse: null,
 
+            currentUserRole: null,
+
             professorCourses: [
-                {
+                /* {
                     id: 1,
                     nom: 'Programmation Web',
                     classe: 'L1 Informatique',
@@ -27,9 +29,40 @@ export default {
                         { id: 1, nom: 'Dupont', prenom: 'Jean', noteTheorique: null, notePratique: null, noteFinale: null },
                         { id: 2, nom: 'Martin', prenom: 'Sophie', noteTheorique: null, notePratique: null, noteFinale: null }
                     ]
-                },
+                }, */
             ],
+            facultes: ""
         }
+    },
+    created() {
+        const savedUser = localStorage.getItem('schola.currentUser');
+        if (savedUser) {
+            const userData = JSON.parse(savedUser);
+            this.currentUserRole = userData.role;
+        } else {
+            this.$router.push('/auth/login');
+        }
+    },
+    mounted() {
+        const savedFacultes = localStorage.getItem('schola.facultes');
+        const savedUsers = localStorage.getItem('schola.users');
+
+        if (savedFacultes) {
+            this.facultes = JSON.parse(savedFacultes);
+        }
+        if (savedUsers) {
+            const users = JSON.parse(savedUsers);
+            this.professors = users.filter(user => user.role === 'professeur');
+        }
+    },
+    computed: {
+        /* filteredProfessors() {
+            if (!this.selectedFacultyFilter) return this.professors;
+            return this.professors.filter(p =>
+
+                p.affectations?.some(a => a.nom === this.selectedFacultyFilter)
+            );
+        } */
     },
     methods: {
         selectCourse(cours) {

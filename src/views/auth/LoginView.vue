@@ -10,17 +10,24 @@ export default {
     },
     methods: {
         login() {
-            const storedUsers = JSON.parse(localStorage.getItem("schola.users")) || [{ id: "s_12bsxdftThGkkH", nom:"admin", prenom:"", email: "admin@schola.com", password:"Test123!", role:"admin"} ];
+            const storedUsers = JSON.parse(localStorage.getItem("schola.users")) || [{ id: "s_12bsxdftThGkkH", nom: "Admin", prenom: "", email: "admin@schola.com", password: "Test123!", role: "admin" }];
 
             const user = storedUsers.find(
                 u => u.email === this.email && u.password === this.password
             );
 
             if (user) {
+                const userInfos = {
+                    id: user.id,
+                    nom: user.nom,
+                    prenom: user.prenom,
+                    role: user.role,
+                };
+                userInfos.role
                 if (this.rememberMe) {
-                    localStorage.setItem("schola.currentUser", JSON.stringify(user));
+                    localStorage.setItem("schola.currentUser", JSON.stringify(userInfos));
                 } else {
-                    sessionStorage.setItem("schola.currentUser", JSON.stringify(user));
+                    sessionStorage.setItem("schola.currentUser", JSON.stringify(userInfos));
                 }
 
                 alert("Login successful");

@@ -35,9 +35,13 @@
 /* user management comp */
 .create-user-container,
 /* faculty management comp */
-.facuty-management-container,
-.facuty-management-container-header,
+.faculty-management-container,
+.faculty-management-container-header,
 .faculties-container,
+/* courses management comp */
+.course-management-container,
+.course-management-container-header,
+/* .courses-container, */
 /* student overview comp */
 .student-overview-container,
 /* professor overview comp */
@@ -85,7 +89,9 @@
 /* user management comp */
 .create-user-container,
 /* faculty management comp */
-.facuty-management-container-header,
+.faculty-management-container-header,
+/* course management comp */
+.course-management-container-header,
 /*----------- calendrier */
 .calendrier .cal-header,
 .calendrier .cal-header .switch,
@@ -162,9 +168,11 @@
 .dashboard-container,
 .dashboard-container .dashboard-item,
 /* faculty management comp */
-.facuty-management-container,
-/* .faculties-container, */
-
+.faculty-management-container,
+.faculties-container,
+/* course management comp */
+.course-management-container,
+.courses-container,
 /* student overview comp */
 .student-overview-container,
 /* professor overview comp */
