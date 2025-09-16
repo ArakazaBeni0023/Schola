@@ -3,50 +3,39 @@ export default {
     props: ['onSelectCourse'], // 👈 Permet d'envoyer le cours sélectionné au parent
     data() {
         return {
-            currentUser: null,
-            professorCoursesByYear: []
-        }
-    },
-    created() {
-        const savedUser = localStorage.getItem('schola.currentUser');
-        const savedUsers = localStorage.getItem('schola.users');
+            // Professor data
+            selectedCourse: null,
 
-        if (savedUser && savedUsers) {
-            const minimalUser = JSON.parse(savedUser);
-            const allUsers = JSON.parse(savedUsers);
-
-            this.currentUser = allUsers.find(u => u.id === minimalUser.id && u.role === 'professeur');
-
-            if (this.currentUser && this.currentUser.affectations) {
-                const allStudents = allUsers.filter(u => u.role === 'etudiant');
-
-                this.professorCoursesByYear = this.currentUser.affectations.flatMap((affectation, index) => {
-                    return affectation.annees.map(annee => {
-                        const etudiants_list = allStudents.filter(e =>
-                            e.faculte === affectation.nom && e.annee === annee
-                        ).map(e => ({
-                            ...e,
-                            noteTheorique: null,
-                            notePratique: null,
-                            noteFinale: null
-                        }));
-
-                        return {
-                            id: `cours_${index}_${annee}`,
-                            nom: affectation.nom,
-                            annee: annee,
-                            etudiants_list,
-                            notesValidees: false
-                        };
-                    });
-                });
-            }
+            professorCourses: [
+                {
+                    id: 1,
+                    nom: 'Programmation Web',
+                    classe: 'L1 Informatique',
+                    etudiants: 25,
+                    notesValidees: false,
+                    etudiants_list: [
+                        { id: 1, nom: 'Dupont', prenom: 'Jean', noteTheorique: null, notePratique: null, noteFinale: null },
+                        { id: 2, nom: 'Martin', prenom: 'Sophie', noteTheorique: null, notePratique: null, noteFinale: null }
+                    ]
+                },
+                {
+                    id: 2,
+                    nom: 'Programmation Web',
+                    classe: 'L1 Informatique',
+                    etudiants: 25,
+                    notesValidees: false,
+                    etudiants_list: [
+                        { id: 1, nom: 'Dupont', prenom: 'Jean', noteTheorique: null, notePratique: null, noteFinale: null },
+                        { id: 2, nom: 'Martin', prenom: 'Sophie', noteTheorique: null, notePratique: null, noteFinale: null }
+                    ]
+                },
+            ],
         }
     },
     methods: {
-        handleSelect(course) {
-            this.onSelectCourse(course); // 👈 Envoie le cours au parent
-        }
+        selectCourse(cours) {
+            this.selectedCourse = cours
+        },
     }
 }
 </script>
@@ -59,8 +48,12 @@ export default {
                 <h4>{{ cours.nom }} - {{ cours.annee }}ᵉ année</h4>
                 <div class="cours-infos">
                     <div class="text-sm">
+                        <i class="bi-book-fill"></i>
+                        <span> {{ cours.classe }}</span>
+                    </div>
+                    <div class="text-sm">
                         <i class="bi-people-fill"></i>
-                        <span>{{ cours.etudiants_list.length }} étudiants</span>
+                        <span> {{ cours.etudiants }} étudiants</span>
                     </div>
                 </div>
                 <button @click="handleSelect(cours)" class="btn">Gérer les notes</button>
