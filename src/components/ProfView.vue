@@ -16,6 +16,7 @@ export default {
     },
     data() {
         return {
+            selectedCourse: null,
             attributes: [
                 {
                     highlight: true,
@@ -24,6 +25,14 @@ export default {
             ],
         };
     },
+    methods: {
+        handleCourseSelection(course) {
+            this.selectedCourse = course;
+        },
+        addNotification(message) {
+            alert(message); // ou utilise un système de notification
+        }
+    }
 }
 </script>
 
@@ -31,14 +40,13 @@ export default {
     <div class="global-container">
         <div class="left-side">
             <HeaderCmp />
-
             <h2 class="main-title">Espace Professeur</h2>
 
             <!-- Dashboard -->
-            <Dashboard />
+            <Dashboard :onSelectCourse="handleCourseSelection" />
 
-            <!-- Grade Management -->
-            <NotesEditor />
+            <!-- Notes Editor -->
+            <NotesEditor v-if="selectedCourse" :course="selectedCourse" @notify="addNotification" />
         </div>
 
         <div class="right-side">

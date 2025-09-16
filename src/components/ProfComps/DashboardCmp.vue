@@ -1,73 +1,52 @@
 <script>
 export default {
+    props: ['onSelectCourse'], // 👈 Permet d'envoyer le cours sélectionné au parent
     data() {
         return {
-            // Professor data
-            selectedCourse: null,
-
-            currentUserRole: null,
-
-            professorCourses: [
-                /* {
-                    id: 1,
-                    nom: 'Programmation Web',
-                    classe: 'L1 Informatique',
-                    etudiants: 25,
-                    notesValidees: false,
-                    etudiants_list: [
-                        { id: 1, nom: 'Dupont', prenom: 'Jean', noteTheorique: null, notePratique: null, noteFinale: null },
-                        { id: 2, nom: 'Martin', prenom: 'Sophie', noteTheorique: null, notePratique: null, noteFinale: null }
-                    ]
-                },
-                {
-                    id: 2,
-                    nom: 'Programmation Web',
-                    classe: 'L1 Informatique',
-                    etudiants: 25,
-                    notesValidees: false,
-                    etudiants_list: [
-                        { id: 1, nom: 'Dupont', prenom: 'Jean', noteTheorique: null, notePratique: null, noteFinale: null },
-                        { id: 2, nom: 'Martin', prenom: 'Sophie', noteTheorique: null, notePratique: null, noteFinale: null }
-                    ]
-                }, */
-            ],
-            facultes: ""
+            currentUser: null,
+            professorCoursesByYear: []
         }
     },
     created() {
         const savedUser = localStorage.getItem('schola.currentUser');
-        if (savedUser) {
-            const userData = JSON.parse(savedUser);
-            this.currentUserRole = userData.role;
-        } else {
-            this.$router.push('/auth/login');
-        }
-    },
-    mounted() {
-        const savedFacultes = localStorage.getItem('schola.facultes');
         const savedUsers = localStorage.getItem('schola.users');
 
-        if (savedFacultes) {
-            this.facultes = JSON.parse(savedFacultes);
-        }
-        if (savedUsers) {
-            const users = JSON.parse(savedUsers);
-            this.professors = users.filter(user => user.role === 'professeur');
-        }
-    },
-    computed: {
-        /* filteredProfessors() {
-            if (!this.selectedFacultyFilter) return this.professors;
-            return this.professors.filter(p =>
+        if (savedUser && savedUsers) {
+            const minimalUser = JSON.parse(savedUser);
+            const allUsers = JSON.parse(savedUsers);
 
-                p.affectations?.some(a => a.nom === this.selectedFacultyFilter)
-            );
-        } */
+            this.currentUser = allUsers.find(u => u.id === minimalUser.id && u.role === 'professeur');
+
+            if (this.currentUser && this.currentUser.affectations) {
+                const allStudents = allUsers.filter(u => u.role === 'etudiant');
+
+                this.professorCoursesByYear = this.currentUser.affectations.flatMap((affectation, index) => {
+                    return affectation.annees.map(annee => {
+                        const etudiants_list = allStudents.filter(e =>
+                            e.faculte === affectation.nom && e.annee === annee
+                        ).map(e => ({
+                            ...e,
+                            noteTheorique: null,
+                            notePratique: null,
+                            noteFinale: null
+                        }));
+
+                        return {
+                            id: `cours_${index}_${annee}`,
+                            nom: affectation.nom,
+                            annee: annee,
+                            etudiants_list,
+                            notesValidees: false
+                        };
+                    });
+                });
+            }
+        }
     },
     methods: {
-        selectCourse(cours) {
-            this.selectedCourse = cours
-        },
+        handleSelect(course) {
+            this.onSelectCourse(course); // 👈 Envoie le cours au parent
+        }
     }
 }
 </script>
@@ -76,23 +55,21 @@ export default {
     <div class="dashboard-container-fluid">
         <h3 class="title">Mes cours</h3>
         <div class="dashboard-container">
-            <div v-for="cours in professorCourses" :key="cours.id" class="dashboard-item">
-                <h4>{{ cours.nom }}</h4>
+            <div v-for="cours in professorCoursesByYear" :key="cours.id" class="dashboard-item">
+                <h4>{{ cours.nom }} - {{ cours.annee }}ᵉ année</h4>
                 <div class="cours-infos">
                     <div class="text-sm">
-                        <i class="bi-book-fill"></i>
-                        <span> {{ cours.classe }}</span>
-                    </div>
-                    <div class="text-sm">
                         <i class="bi-people-fill"></i>
-                        <span> {{ cours.etudiants }} étudiants</span>
+                        <span>{{ cours.etudiants_list.length }} étudiants</span>
                     </div>
                 </div>
-                <button @click="selectCourse(cours)" class="btn">Gérer les notes</button>
+                <button @click="handleSelect(cours)" class="btn">Gérer les notes</button>
             </div>
         </div>
     </div>
 </template>
+
+
 
 <style scoped>
 .dashboard-container-fluid {

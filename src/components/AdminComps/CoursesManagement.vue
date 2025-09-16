@@ -216,7 +216,6 @@ export default {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-top: 1rem;
 }
 
 .course .course-counts .counter-items {

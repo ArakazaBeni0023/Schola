@@ -1,54 +1,62 @@
 <script>
 export default {
-    props: {
-        // selectedCourse: {
-        //     type: Array,
-        //     required: true
-        // }
-    },
-
+    props: ['course', 'currentUser'], // 👈 Ajout du currentUser pour vérifier le rôle
     data() {
         return {
-            course: {
-                id: 1,
-                nom: 'Programmation Web',
-                classe: 'L1 Informatique',
-                etudiants: 25,
-                notesValidees: false,
-                etudiants_list: [
-                    { id: 1, nom: 'Nitegeka', prenom: 'Jean', noteTheorique: null, notePratique: null, noteFinale: null },
-                    { id: 2, nom: 'Mahoro', prenom: 'Sophie', noteTheorique: null, notePratique: null, noteFinale: null },
-                ]
-            },
-            selectedCourse: []
+            selectedCourse: {},
+            isLocked: false
         }
     },
-
+    watch: {
+        course: {
+            immediate: true,
+            handler(newCourse) {
+                this.selectedCourse = newCourse;
+                this.loadLockState();
+            }
+        }
+    },
     methods: {
-        getData() {
-            this.selectedCourse = this.course;
-        },
         calculateFinalGrade(etudiant) {
             if (etudiant.noteTheorique !== null && etudiant.notePratique !== null) {
-                etudiant.noteFinale = ((etudiant.noteTheorique / 12) * 12 + (etudiant.notePratique / 8) * 8).toFixed(1)
+                etudiant.noteFinale = ((etudiant.noteTheorique / 12) * 12 + (etudiant.notePratique / 8) * 8).toFixed(1);
             }
         },
         validateGrades() {
             this.selectedCourse.notesValidees = true;
-            this.addNotification('Notes validées et verrouillées')
+            this.isLocked = true;
+            this.saveLockState();
+            this.$emit('notify', 'Notes validées et verrouillées');
         },
-    },
+        unlockGrades() {
+            this.selectedCourse.notesValidees = false;
+            this.isLocked = false;
+            this.saveLockState();
+            this.$emit('notify', 'Notes déverrouillées par l’admin');
+        },
+        saveLockState() {
+            const lockKey = `schola.lockedNotes.${this.selectedCourse.id}`;
+            localStorage.setItem(lockKey, JSON.stringify(true));
+        },
 
-    mounted() {
-        this.getData();
+        loadLockState() {
+            const lockKey = `schola.lockedNotes.${this.selectedCourse.id}`;
+            const locked = JSON.parse(localStorage.getItem(lockKey));
+            this.isLocked = locked === true;
+            this.selectedCourse.notesValidees = this.isLocked;
+        }
+
     }
 }
 </script>
 
+
+
+
 <template>
     <div class="table-container-fluid">
         <div class="table-container-header">
-            <h3 class="title">Saisie des notes - {{ selectedCourse.nom }}</h3>
+            <h3 class="title">Saisie des notes - {{ selectedCourse.nom }} ({{ selectedCourse.annee }}ᵉ année)</h3>
         </div>
         <div class="table-container">
             <table>
@@ -65,13 +73,13 @@ export default {
                         <td>{{ etudiant.nom }} {{ etudiant.prenom }}</td>
                         <td class="td-editor">
                             <input v-model.number="etudiant.noteTheorique" type="number" min="0" max="12" step="0.5"
-                                :disabled="selectedCourse.notesValidees" @input="calculateFinalGrade(etudiant)"
-                                class="editor" placeholder="0">
+                                :disabled="isLocked" @input="calculateFinalGrade(etudiant)" class="editor"
+                                placeholder="0">
                         </td>
                         <td class="td-editor">
                             <input v-model.number="etudiant.notePratique" type="number" min="0" max="8" step="0.5"
-                                :disabled="selectedCourse.notesValidees" @input="calculateFinalGrade(etudiant)"
-                                class="editor" placeholder="0">
+                                :disabled="isLocked" @input="calculateFinalGrade(etudiant)" class="editor"
+                                placeholder="0">
                         </td>
                         <td>
                             {{ etudiant.noteFinale || '-' }}
@@ -81,9 +89,15 @@ export default {
             </table>
         </div>
         <div>
-            <button v-if="!selectedCourse.notesValidees" @click="validateGrades" class="valide-btn">
-                Valider les notes</button>
-            <span v-else class="locked-msg"><i class="bi-lock-fill"></i> Notes validées et verrouillées</span>
+            <button v-if="!isLocked" @click="validateGrades" class="valide-btn">
+                Valider les notes
+            </button>
+            <span v-else class="locked-msg">
+                <i class="bi-lock-fill"></i> Notes verrouillées
+                <button v-if="currentUser.role === 'admin'" @click="unlockGrades" class="unlock-btn">
+                    Déverrouiller
+                </button>
+            </span>
         </div>
     </div>
 </template>
