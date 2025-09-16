@@ -46,7 +46,7 @@ export default {
                     .map(this.formatAnnee)
                     .join(', ');
                 return `${a.nom} [${annees}]`;
-            }).join(' | ');
+            }).join(' • ');
         },
         startEdit(prof) {
             this.editingProfessorId = prof.id;

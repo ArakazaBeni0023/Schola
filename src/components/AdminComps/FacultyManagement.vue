@@ -36,6 +36,7 @@ export default {
                     id: Date.now(),
                     nom: this.newFacultyName.trim(),
                     duree: this.newFacultyDuration,
+                    courses: [],
                 });
                 this.newFacultyName = '';
                 this.newFacultyDuration = 3;
@@ -90,10 +91,10 @@ export default {
 </script>
 
 <template>
-    <div class="facuty-management-container">
+    <div class="faculty-management-container">
         <h3 class="title">Gestion des facultés ({{ facultes.length }})</h3>
 
-        <div class="facuty-management-container-header">
+        <div class="faculty-management-container-header">
             <input v-model.trim="newFacultyName" type="text" placeholder="Nom de la faculté" class="input">
             <input v-model.number="newFacultyDuration" type="number" min="1" placeholder="Durée (années)" class="input"
                 v-show="newFacultyName != ''">
@@ -151,7 +152,7 @@ export default {
 </template>
 
 <style scoped>
-.facuty-management-container {
+.faculty-management-container {
     background: var(--color-surface);
     padding: 1rem;
     border-radius: 15px;
@@ -159,12 +160,12 @@ export default {
     gap: .5rem;
 }
 
-.facuty-management-container-header {
+.faculty-management-container-header {
     gap: .5rem;
     padding: 0;
 }
 
-.facuty-management-container-header .input {
+.faculty-management-container-header .input {
     all: unset;
     background: var(--hover-lw);
     border: 2px solid #00000000;
@@ -176,7 +177,7 @@ export default {
     transition: all .5s ease;
 }
 
-.facuty-management-container-header .input:focus {
+.faculty-management-container-header .input:focus {
     border: 2px solid var(--color-secondary);
 }
 
@@ -371,7 +372,7 @@ export default {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .facuty-management-container-header {
+    .faculty-management-container-header {
         flex-direction: column;
         align-items: normal;
     }

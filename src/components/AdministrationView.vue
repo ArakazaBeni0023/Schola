@@ -2,6 +2,7 @@
 import HeaderCmp from './HeaderCmp.vue';
 import UserManagement from './AdminComps/UserManagement.vue';
 import FacultyManagement from './AdminComps/FacultyManagement.vue';
+import CoursesManagement from './AdminComps/CoursesManagement.vue';
 import StudentOverview from './AdminComps/StudentOverview.vue';
 import ProfOverview from './AdminComps/ProfOverview.vue';
 
@@ -11,6 +12,7 @@ export default {
         HeaderCmp,
         UserManagement,
         FacultyManagement,
+        CoursesManagement,
         ProfOverview,
         StudentOverview,
     },
@@ -40,6 +42,9 @@ export default {
 
             <!-- Faculty Management -->
             <FacultyManagement />
+
+            <!-- Courses Management -->
+            <CoursesManagement />
 
             <!-- Professor Overview -->
             <ProfOverview />

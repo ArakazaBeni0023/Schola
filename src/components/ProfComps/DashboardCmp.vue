@@ -2,39 +2,57 @@
 export default {
     data() {
         return {
-            // Professor data
             selectedCourse: null,
-
-            professorCourses: [
-                {
-                    id: 1,
-                    nom: 'Programmation Web',
-                    classe: 'L1 Informatique',
-                    etudiants: 25,
-                    notesValidees: false,
-                    etudiants_list: [
-                        { id: 1, nom: 'Dupont', prenom: 'Jean', noteTheorique: null, notePratique: null, noteFinale: null },
-                        { id: 2, nom: 'Martin', prenom: 'Sophie', noteTheorique: null, notePratique: null, noteFinale: null }
-                    ]
-                },
-                {
-                    id: 2,
-                    nom: 'Programmation Web',
-                    classe: 'L1 Informatique',
-                    etudiants: 25,
-                    notesValidees: false,
-                    etudiants_list: [
-                        { id: 1, nom: 'Dupont', prenom: 'Jean', noteTheorique: null, notePratique: null, noteFinale: null },
-                        { id: 2, nom: 'Martin', prenom: 'Sophie', noteTheorique: null, notePratique: null, noteFinale: null }
-                    ]
-                },
-            ],
+            currentUser: null,
+            professorCourses: []
         }
+    },
+    created() {
+        const savedUser = localStorage.getItem('schola.currentUser');
+        const savedUsers = localStorage.getItem('schola.users');
+
+        if (savedUser && savedUsers) {
+            const userData = JSON.parse(savedUser);
+            const allUsers = JSON.parse(savedUsers);
+
+            // Vérifie que l'utilisateur est professeur
+            if (userData.role === 'professeur') {
+                this.currentUser = allUsers.find(u => u.email === userData.email);
+
+                if (this.currentUser && this.currentUser.affectations) {
+                    // Transforme les affectations en liste de cours
+                    this.professorCourses = this.currentUser.affectations.map((affectation, index) => {
+                        return {
+                            id: `cours_${index}`,
+                            nom: affectation.nom,
+                            annees: affectation.annees,
+                            etudiants: this.countStudents(affectation.nom, affectation.annees)
+                        };
+                    });
+
+                }
+            } else {
+                this.$router.push('/auth/login');
+            }
+        } else {
+            this.$router.push('/auth/login');
+        } console.log("this is professor Courses", this.professorCourses)
     },
     methods: {
         selectCourse(cours) {
-            this.selectedCourse = cours
+            this.selectedCourse = cours;
         },
+        countStudents(faculte, annees) {
+            const savedUsers = localStorage.getItem('schola.users');
+            if (!savedUsers) return 0;
+
+            const users = JSON.parse(savedUsers);
+            return users.filter(u =>
+                u.role === 'etudiant' &&
+                u.faculte === faculte &&
+                annees.includes(u.annee)
+            ).length;
+        }
     }
 }
 </script>
@@ -47,12 +65,12 @@ export default {
                 <h4>{{ cours.nom }}</h4>
                 <div class="cours-infos">
                     <div class="text-sm">
-                        <i class="bi-book-fill"></i>
-                        <span> {{ cours.classe }}</span>
+                        <i class="bi-calendar-fill"></i>
+                        <span>Année(s): {{ cours.annees.join(', ') }}</span>
                     </div>
                     <div class="text-sm">
                         <i class="bi-people-fill"></i>
-                        <span> {{ cours.etudiants }} étudiants</span>
+                        <span>{{ cours.etudiants }} étudiants</span>
                     </div>
                 </div>
                 <button @click="selectCourse(cours)" class="btn">Gérer les notes</button>
