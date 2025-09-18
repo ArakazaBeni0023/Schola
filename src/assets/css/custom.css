@@ -156,6 +156,7 @@ table {
     font-family: 'Poppins', sans-serif;
     border-radius: 15px;
     padding: .5rem;
+    z-index: 1;
 }
 
 .checking-btns {

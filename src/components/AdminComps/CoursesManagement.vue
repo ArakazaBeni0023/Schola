@@ -5,9 +5,11 @@ export default {
             facultes: [],
             newCourseName: '',
             newCourseDuration: 3,
+            newCourseAnneeEtude: 1,
             editingCourseId: null,
             editedCourseName: '',
             editedCourseDuration: 3,
+            editedCourseAnneeEtude: 1,
             isAddingCourse: false,
             selectedFaculteId: null,
         };
@@ -35,18 +37,12 @@ export default {
                     id: Date.now(),
                     nom: this.newCourseName.trim(),
                     duree: this.newCourseDuration,
+                    anneeEtude: this.newCourseAnneeEtude
                 });
                 this.newCourseName = '';
                 this.newCourseDuration = 3;
+                this.newCourseAnneeEtude = 1;
                 this.isAddingCourse = false;
-                this.saveFacultes();
-            }
-        },
-        deleteCourse(faculteId, courseId) {
-            if (!confirm("Supprimer ce cours?")) return;
-            const faculte = this.facultes.find(f => f.id === faculteId);
-            if (faculte) {
-                faculte.courses = faculte.courses.filter(c => c.id !== courseId);
                 this.saveFacultes();
             }
         },
@@ -54,6 +50,7 @@ export default {
             this.editingCourseId = course.id;
             this.editedCourseName = course.nom;
             this.editedCourseDuration = course.duree;
+            this.editedCourseAnneeEtude = course.anneeEtude || 1;
         },
         confirmEdit(faculteId) {
             const faculte = this.facultes.find(f => f.id === faculteId);
@@ -62,13 +59,16 @@ export default {
                 if (course && this.editedCourseName.trim()) {
                     course.nom = this.editedCourseName.trim();
                     course.duree = this.editedCourseDuration;
+                    course.anneeEtude = this.editedCourseAnneeEtude;
                     this.editingCourseId = null;
                     this.editedCourseName = '';
                     this.editedCourseDuration = 3;
+                    this.editedCourseAnneeEtude = 1;
                     this.saveFacultes();
                 }
             }
         },
+
         cancelEdit() {
             this.editingCourseId = null;
             this.editedCourseName = '';
@@ -90,28 +90,32 @@ export default {
                         v-if="isAddingCourse === false || selectedFaculteId === faculte.id"></button>
 
                 </div>
-
+                <!-- formulaire d'ajout -->
                 <div v-if="isAddingCourse && selectedFaculteId === faculte.id" class="course-form add-course-form">
                     <input v-model="newCourseName" placeholder="Nom du cours..." />
                     <input type="number" v-model="newCourseDuration" min="1" placeholder="Durée (semaines)" />
+                    <input type="number" v-model="newCourseAnneeEtude" min="1" max="3" placeholder="Année d'étude" />
                     <div class="checking-btns">
                         <button @click="isAddingCourse = false" class="cancel-btn bi-x-lg"></button>
                         <button @click="addCourse" class="save-btn bi-check-lg"></button>
                     </div>
                 </div>
-
+                <!-- formulaire d'édition -->
                 <div class="course-counts">
                     <div v-for="course in faculte.courses" :key="course.id" class="counter-items">
                         <div v-if="editingCourseId === course.id" class="course-form modif-course-form">
                             <input v-model="editedCourseName" />
                             <input type="number" v-model="editedCourseDuration" min="1" />
+                            <input type="number" v-model="editedCourseAnneeEtude" min="1" max="3"
+                                placeholder="Année d'étude" />
+
                             <div class="checking-btns">
                                 <button @click="cancelEdit" class="cancel-btn bi-x-lg"></button>
                                 <button @click="confirmEdit(faculte.id)" class="save-btn bi-check-lg"></button>
                             </div>
                         </div>
                         <div v-else>
-                            {{ course.nom }} ({{ course.duree }} semaines)
+                            {{ course.nom }} ({{ course.duree }} semaines, année {{ course.anneeEtude }})
                             <div class="crud-btns">
                                 <button class="edit bi-pencil" @click="startEditing(course)"></button>
                                 <button class="delete bi-trash" @click="deleteCourse(faculte.id, course.id)"></button>

@@ -1,43 +1,57 @@
 <script>
 export default {
-    props: ['onSelectCourse'], // 👈 Permet d'envoyer le cours sélectionné au parent
+    props: ['onSelectCourse'],
     data() {
         return {
-            // Professor data
-            selectedCourse: null,
+            currentUser: null,
+            professorCoursesByYear: [],
+        };
+    },
+    created() {
+        const savedUser = localStorage.getItem('schola.currentUser');
+        const savedUsers = localStorage.getItem('schola.users');
+        const savedFacultes = localStorage.getItem('schola.facultes');
 
-            professorCourses: [
-                {
-                    id: 1,
-                    nom: 'Programmation Web',
-                    classe: 'L1 Informatique',
-                    etudiants: 25,
-                    notesValidees: false,
-                    etudiants_list: [
-                        { id: 1, nom: 'Dupont', prenom: 'Jean', noteTheorique: null, notePratique: null, noteFinale: null },
-                        { id: 2, nom: 'Martin', prenom: 'Sophie', noteTheorique: null, notePratique: null, noteFinale: null }
-                    ]
-                },
-                {
-                    id: 2,
-                    nom: 'Programmation Web',
-                    classe: 'L1 Informatique',
-                    etudiants: 25,
-                    notesValidees: false,
-                    etudiants_list: [
-                        { id: 1, nom: 'Dupont', prenom: 'Jean', noteTheorique: null, notePratique: null, noteFinale: null },
-                        { id: 2, nom: 'Martin', prenom: 'Sophie', noteTheorique: null, notePratique: null, noteFinale: null }
-                    ]
-                },
-            ],
+        if (savedUser && savedUsers && savedFacultes) {
+            const minimalUser = JSON.parse(savedUser);
+            const allUsers = JSON.parse(savedUsers);
+            const facultes = JSON.parse(savedFacultes);
+
+            this.currentUser = allUsers.find(u => u.id === minimalUser.id && u.role === 'professeur');
+
+            if (this.currentUser?.affectations) {
+                const allStudents = allUsers.filter(u => u.role === 'etudiant');
+
+                this.professorCoursesByYear = this.currentUser.affectations.flatMap((affectation, index) => {
+                    const fac = facultes.find(f => f.nom === affectation.nom);
+                    if (!fac) return [];
+
+                    return affectation.annees.flatMap(anneeObj => {
+                        const coursEtudie = anneeObj.cours || [];
+
+                        const etudiants_list = allStudents.filter(e =>
+
+                            e.faculte === affectation.nom && e.annee === anneeObj.annee
+                        );
+
+                        return coursEtudie.map(course => ({
+                            id: `cours_${index}_${anneeObj.annee}_${course.id}`,
+                            nom: course.nom,
+                            faculte: affectation.nom,
+                            annee: anneeObj.annee,
+                            etudiants_list
+                        }));
+                    });
+                });
+            }
         }
     },
     methods: {
-        selectCourse(cours) {
-            this.selectedCourse = cours
-        },
+        handleSelect(course) {
+            this.onSelectCourse(course);
+        }
     }
-}
+};
 </script>
 
 <template>
@@ -45,24 +59,20 @@ export default {
         <h3 class="title">Mes cours</h3>
         <div class="dashboard-container">
             <div v-for="cours in professorCoursesByYear" :key="cours.id" class="dashboard-item">
-                <h4>{{ cours.nom }} - {{ cours.annee }}ᵉ année</h4>
+                <h4>{{ cours.nom }} - {{ cours.faculte }} - {{ cours.annee }}ᵉ année</h4>
                 <div class="cours-infos">
                     <div class="text-sm">
-                        <i class="bi-book-fill"></i>
-                        <span> {{ cours.classe }}</span>
-                    </div>
-                    <div class="text-sm">
                         <i class="bi-people-fill"></i>
-                        <span> {{ cours.etudiants }} étudiants</span>
+                        <span>{{ cours.etudiants_list.length }} étudiants</span>
                     </div>
                 </div>
-                <button @click="handleSelect(cours)" class="btn">Gérer les notes</button>
+                <button v-if="cours.etudiants_list.length" @click="handleSelect(cours)" class="btn">
+                    Gérer les notes
+                </button>
             </div>
         </div>
     </div>
 </template>
-
-
 
 <style scoped>
 .dashboard-container-fluid {
@@ -130,6 +140,12 @@ export default {
 }
 
 @media (max-width:768px) {
+    .dashboard-container-fluid .dashboard-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width:468px) {
     .dashboard-container-fluid .dashboard-container {
         grid-template-columns: repeat(1, 1fr);
     }

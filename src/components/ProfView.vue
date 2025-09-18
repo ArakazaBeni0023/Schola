@@ -17,6 +17,7 @@ export default {
     data() {
         return {
             selectedCourse: null,
+            currentUser: null,
             attributes: [
                 {
                     highlight: true,
@@ -25,15 +26,25 @@ export default {
             ],
         };
     },
+    created() {
+        const savedUser = localStorage.getItem('schola.currentUser');
+        const savedUsers = localStorage.getItem('schola.users');
+
+        if (savedUser && savedUsers) {
+            const minimalUser = JSON.parse(savedUser);
+            const allUsers = JSON.parse(savedUsers);
+            this.currentUser = allUsers.find(u => u.id === minimalUser.id && u.role === 'professeur');
+        }
+    },
     methods: {
         handleCourseSelection(course) {
             this.selectedCourse = course;
         },
         addNotification(message) {
-            alert(message); // ou utilise un système de notification
+            alert(message);
         }
     }
-}
+};
 </script>
 
 <template>
@@ -42,11 +53,10 @@ export default {
             <HeaderCmp />
             <h2 class="main-title">Espace Professeur</h2>
 
-            <!-- Dashboard -->
             <Dashboard :onSelectCourse="handleCourseSelection" />
 
-            <!-- Notes Editor -->
-            <NotesEditor v-if="selectedCourse" :course="selectedCourse" @notify="addNotification" />
+            <NotesEditor v-if="selectedCourse" :course="selectedCourse" :currentUser="currentUser"
+                @notify="addNotification" />
         </div>
 
         <div class="right-side">

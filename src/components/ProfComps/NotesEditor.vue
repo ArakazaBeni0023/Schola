@@ -1,56 +1,122 @@
 <script>
 export default {
-    props: ['course', 'currentUser'], // 👈 Ajout du currentUser pour vérifier le rôle
+    props: ['course', 'currentUser'],
     data() {
         return {
             selectedCourse: {},
-            isLocked: false
-        }
+            notesIsValide: null,
+        };
     },
     watch: {
         course: {
             immediate: true,
             handler(newCourse) {
                 this.selectedCourse = newCourse;
-                this.loadLockState();
+                this.ensureNotesTable();
+                this.loadExistingNotes();
             }
         }
     },
     methods: {
-        calculateFinalGrade(etudiant) {
-            if (etudiant.noteTheorique !== null && etudiant.notePratique !== null) {
-                etudiant.noteFinale = ((etudiant.noteTheorique / 12) * 12 + (etudiant.notePratique / 8) * 8).toFixed(1);
+        ensureNotesTable() {
+            if (!localStorage.getItem('schola.notes')) {
+                localStorage.setItem('schola.notes', JSON.stringify([]));
             }
         },
+        loadExistingNotes() {
+            const allCourses = JSON.parse(localStorage.getItem('schola.notes')) || [];
+
+            const courseNote = allCourses.find(c =>
+                c.faculte === this.selectedCourse.faculte &&
+                c.annee === this.selectedCourse.annee &&
+                c.coursId === this.selectedCourse.coursId
+            );
+
+            this.notesIsValide = courseNote?.notesValidees || false;
+
+            if (courseNote && Array.isArray(this.selectedCourse.etudiants_list)) {
+                this.selectedCourse.etudiants_list.forEach(etudiant => {
+                    const note = courseNote.etudiants.find(n => n.etudiantId === etudiant.id);
+                    if (note) {
+                        etudiant.noteTheorique = note.notes.theorique;
+                        etudiant.notePratique = note.notes.pratique;
+                        etudiant.noteFinale = note.notes.finale;
+                    }
+                });
+            }
+        },
+        calculateFinalGrade(etudiant) {
+            if (etudiant.noteTheorique != null && etudiant.notePratique != null) {
+                etudiant.noteFinale = (
+                    (etudiant.noteTheorique / 12) * 12 +
+                    (etudiant.notePratique / 8) * 8
+                ).toFixed(1);
+            } else {
+                etudiant.noteFinale = null;
+            }
+        },
+        saveCourseNotes() {
+            if (!Array.isArray(this.selectedCourse.etudiants_list)) return;
+            if (!this.currentUser?.id) return;
+
+            const allCourses = JSON.parse(localStorage.getItem('schola.notes')) || [];
+
+            const index = allCourses.findIndex(c =>
+                c.faculte === this.selectedCourse.faculte &&
+                c.annee === this.selectedCourse.annee &&
+                c.coursId === this.selectedCourse.coursId
+            );
+
+            const etudiants = this.selectedCourse.etudiants_list.map(etudiant => ({
+                etudiantId: etudiant.id,
+                notes: {
+                    theorique: etudiant.noteTheorique ?? null,
+                    pratique: etudiant.notePratique ?? null,
+                    finale: etudiant.noteFinale ?? null
+                }
+            }));
+
+            const newCourseNote = {
+                faculte: this.selectedCourse.faculte,
+                annee: this.selectedCourse.annee,
+                coursId: this.selectedCourse.coursId,
+                professeurId: this.currentUser.id,
+                notesValidees: false,
+                dateDerniereModification: new Date().toISOString(),
+                etudiants
+            };
+
+            if (index !== -1) {
+                allCourses[index] = newCourseNote;
+            } else {
+                allCourses.push(newCourseNote);
+            }
+
+            localStorage.setItem('schola.notes', JSON.stringify(allCourses));
+            this.$emit('notify', 'Notes enregistrées');
+        },
         validateGrades() {
-            this.selectedCourse.notesValidees = true;
-            this.isLocked = true;
-            this.saveLockState();
-            this.$emit('notify', 'Notes validées et verrouillées');
-        },
-        unlockGrades() {
-            this.selectedCourse.notesValidees = false;
-            this.isLocked = false;
-            this.saveLockState();
-            this.$emit('notify', 'Notes déverrouillées par l’admin');
-        },
-        saveLockState() {
-            const lockKey = `schola.lockedNotes.${this.selectedCourse.id}`;
-            localStorage.setItem(lockKey, JSON.stringify(true));
-        },
+            this.saveCourseNotes();
 
-        loadLockState() {
-            const lockKey = `schola.lockedNotes.${this.selectedCourse.id}`;
-            const locked = JSON.parse(localStorage.getItem(lockKey));
-            this.isLocked = locked === true;
-            this.selectedCourse.notesValidees = this.isLocked;
+            const allCourses = JSON.parse(localStorage.getItem('schola.notes')) || [];
+
+            const index = allCourses.findIndex(c =>
+                c.faculte === this.selectedCourse.faculte &&
+                c.annee === this.selectedCourse.annee &&
+                c.coursId === this.selectedCourse.coursId
+            );
+
+            if (index !== -1) {
+                allCourses[index].notesValidees = true;
+                localStorage.setItem('schola.notes', JSON.stringify(allCourses));
+                this.notesIsValide = true;
+                this.selectedCourse.notesValidees = true;
+                this.$emit('notify', 'Notes validées et verrouillées');
+            }
         }
-
     }
-}
+};
 </script>
-
-
 
 
 <template>
@@ -69,16 +135,16 @@ export default {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="etudiant in selectedCourse.etudiants_list" :key="etudiant.id">
+                    <tr v-for="etudiant in selectedCourse.etudiants_list || []" :key="etudiant.id">
                         <td>{{ etudiant.nom }} {{ etudiant.prenom }}</td>
                         <td class="td-editor">
                             <input v-model.number="etudiant.noteTheorique" type="number" min="0" max="12" step="0.5"
-                                :disabled="isLocked" @input="calculateFinalGrade(etudiant)" class="editor"
+                                :disabled="notesIsValide" @input="calculateFinalGrade(etudiant)" class="editor"
                                 placeholder="0">
                         </td>
                         <td class="td-editor">
                             <input v-model.number="etudiant.notePratique" type="number" min="0" max="8" step="0.5"
-                                :disabled="isLocked" @input="calculateFinalGrade(etudiant)" class="editor"
+                                :disabled="notesIsValide" @input="calculateFinalGrade(etudiant)" class="editor"
                                 placeholder="0">
                         </td>
                         <td>
@@ -89,18 +155,17 @@ export default {
             </table>
         </div>
         <div>
-            <button v-if="!isLocked" @click="validateGrades" class="valide-btn">
+            <button v-if="!notesIsValide" class="valide-btn" @click="saveCourseNotes">
+                Enregistrer les notes
+            </button>
+            <button v-if="!notesIsValide" @click="validateGrades" class="valide-btn">
                 Valider les notes
             </button>
-            <span v-else class="locked-msg">
-                <i class="bi-lock-fill"></i> Notes verrouillées
-                <button v-if="currentUser.role === 'admin'" @click="unlockGrades" class="unlock-btn">
-                    Déverrouiller
-                </button>
-            </span>
+            <span v-else class="locked-msg"><i class="bi-lock-fill"></i> Notes validées et verrouillées</span>
         </div>
     </div>
 </template>
+
 
 <style scoped>
 .td-editor {
