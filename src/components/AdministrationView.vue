@@ -5,6 +5,7 @@ import FacultyManagement from './AdminComps/FacultyManagement.vue';
 import CoursesManagement from './AdminComps/CoursesManagement.vue';
 import StudentOverview from './AdminComps/StudentOverview.vue';
 import ProfOverview from './AdminComps/ProfOverview.vue';
+import ValidatedCourses from './AdminComps/ValidatedCourses.vue';
 
 export default {
     name: 'AdministrationView',
@@ -15,6 +16,7 @@ export default {
         CoursesManagement,
         ProfOverview,
         StudentOverview,
+        ValidatedCourses
     },
 
     data() {
@@ -51,6 +53,9 @@ export default {
 
             <!-- Student Overview -->
             <StudentOverview />
+
+            <!-- Validated Courses -->
+            <ValidatedCourses />
 
             <!----------------------- displaying for mobile only -->
             <VCalendar class="calendrier" :attributes="attributes" />

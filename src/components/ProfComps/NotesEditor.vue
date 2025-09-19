@@ -80,11 +80,13 @@ export default {
                 faculte: this.selectedCourse.faculte,
                 annee: this.selectedCourse.annee,
                 coursId: this.selectedCourse.coursId,
+                coursNom: this.selectedCourse.nom,
                 professeurId: this.currentUser.id,
                 notesValidees: false,
                 dateDerniereModification: new Date().toISOString(),
                 etudiants
             };
+
 
             if (index !== -1) {
                 allCourses[index] = newCourseNote;

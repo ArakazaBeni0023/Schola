@@ -1,0 +1,173 @@
+<script>
+export default {
+    name: 'AdminCoursesView',
+    data() {
+        return {
+            allCourses: [],
+            allUsers: [],
+            filter: 'tous'
+        };
+    },
+    created() {
+        this.loadData();
+    },
+    computed: {
+        filteredCourses() {
+            if (this.filter === 'valides') {
+                return this.allCourses.filter(c => c.notesValidees);
+            } else if (this.filter === 'non-valides') {
+                return this.allCourses.filter(c => !c.notesValidees);
+            }
+            return this.allCourses;
+        }
+    },
+    methods: {
+        loadData() {
+            const rawCourses = localStorage.getItem('schola.notes');
+            const rawUsers = localStorage.getItem('schola.users');
+
+            this.allCourses = rawCourses ? JSON.parse(rawCourses) : [];
+            this.allUsers = rawUsers ? JSON.parse(rawUsers) : [];
+        },
+        getProfName(id) {
+            const prof = this.allUsers.find(u => u.id === id);
+            return prof ? `${prof.nom} ${prof.prenom}` : `Prof inconnu (${id})`;
+        },
+        formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+        },
+        getStudentCount(cours) {
+            return cours.etudiants?.length || 0;
+        },
+        getAverage(cours) {
+            const notes = cours.etudiants
+                .map(e => parseFloat(e.notes.finale))
+                .filter(n => !isNaN(n));
+
+            if (notes.length === 0) return '-';
+            const sum = notes.reduce((a, b) => a + b, 0);
+            return (sum / notes.length).toFixed(1);
+        }
+    }
+};
+</script>
+
+<template>
+    <div class="admin-container">
+        <h3 class="title">Cours enregistrés ({{ filteredCourses.length }})</h3>
+
+        <div class="filter-container">
+            <select v-model="filter" class="select-input">
+                <option value="tous">Tous</option>
+                <option value="valides">Validés</option>
+                <option value="non-valides">Non validés</option>
+            </select>
+        </div>
+
+        <div v-if="filteredCourses.length === 0" class="empty-msg">
+            Aucun cours trouvé pour ce filtre.
+        </div>
+        <div class="courses-container">
+
+
+            <div v-for="cours in filteredCourses" :key="cours.coursId" class="course-block">
+                <h3 class="title">{{ cours.coursNom }} - {{ cours.annee }}ᵉ année -{{ cours.faculte }} </h3>
+                <div class="stats">
+                    <span><i class="bi-person-fill"></i> {{ getProfName(cours.professeurId) }}</span>
+
+                    <span><i class="bi-pie-chart-fill "></i> {{ getAverage(cours) }} </span>
+                    <span>
+                        <i class="bi-people-fill"></i>
+                        {{ getStudentCount(cours) }}
+                        {{ getStudentCount(cours) === 1 ? 'Étudiant' : 'Étudiants' }}
+                    </span>
+                    <span>
+                        <i class="bi-clock-history"></i>
+                        {{ formatDate(cours.dateDerniereModification) }}
+                    </span>
+                    <p class="status" :class="cours.notesValidees ? 'validé' : 'non-validé'">
+                        <i :class="cours.notesValidees ? 'bi-lock-fill' : 'bi-unlock-fill'"></i>
+                        {{ cours.notesValidees ? 'Validé et Verrouillé' : 'Non validé et Non Verrouillé' }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style scoped>
+.admin-container {
+    background: var(--color-surface);
+    padding: 1rem;
+    border-radius: 15px;
+    border: 2px solid var(--color-primary);
+    gap: 1rem;
+}
+
+.filter-container {
+    margin-bottom: 1rem;
+}
+
+.courses-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto;
+    gap: .5rem;
+}
+
+.course-block {
+    background: var(--hover-lw);
+    border: 1px solid var(--color-secondary);
+    padding: 15px;
+    border-radius: 6px;
+
+}
+
+.course-block .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-top: 1rem;
+}
+
+span {
+    font-size: 12px;
+    border: 1px solid var(--color-secondary);
+    padding: .3rem .5rem;
+    border-radius: 50px;
+}
+
+.status {
+    font-weight: bold;
+    padding: 0.3rem 0.5rem;
+    border-radius: 50px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: .2rem;
+}
+
+.validé {
+    background-color: var(--color-success-bg);
+    color: var(--color-success);
+    border: 1px solid var(--color-success);
+}
+
+.non-validé {
+    background-color: var(--color-danger-bg);
+    color: var(--color-danger);
+    border: 1px solid var(--color-danger);
+}
+
+.empty-msg {
+    font-style: italic;
+    color: var(--collor-muted);
+}
+
+@media (max-width:768px) {
+    .courses-container {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+</style>
