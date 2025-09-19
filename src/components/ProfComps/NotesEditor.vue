@@ -77,6 +77,7 @@ export default {
             }));
 
             const newCourseNote = {
+                id: Date.now(),
                 faculte: this.selectedCourse.faculte,
                 annee: this.selectedCourse.annee,
                 coursId: this.selectedCourse.coursId,

@@ -48,7 +48,21 @@ export default {
             if (notes.length === 0) return '-';
             const sum = notes.reduce((a, b) => a + b, 0);
             return (sum / notes.length).toFixed(1);
+        },
+        toggleCourseLock(id, lock = true) {
+            const action = lock ? 'verrouiller' : 'déverrouiller';
+            if (!confirm(`Voulez-vous vraiment ${action} ce cours?`)) return;
+
+            const index = this.allCourses.findIndex(c => c.id === id);
+            if (index !== -1) {
+                this.allCourses[index].notesValidees = lock;
+                this.allCourses[index].dateDerniereModification = new Date().toISOString();
+
+                localStorage.setItem('schola.notes', JSON.stringify(this.allCourses));
+                this.$emit('notify', `Cours ${lock ? 'verrouillé' : 'déverrouillé'} avec succès`);
+            }
         }
+
     }
 };
 </script>
@@ -69,8 +83,6 @@ export default {
             Aucun cours trouvé pour ce filtre.
         </div>
         <div class="courses-container">
-
-
             <div v-for="cours in filteredCourses" :key="cours.coursId" class="course-block">
                 <h3 class="title">{{ cours.coursNom }} - {{ cours.annee }}ᵉ année -{{ cours.faculte }} </h3>
                 <div class="stats">
@@ -86,10 +98,22 @@ export default {
                         <i class="bi-clock-history"></i>
                         {{ formatDate(cours.dateDerniereModification) }}
                     </span>
-                    <p class="status" :class="cours.notesValidees ? 'validé' : 'non-validé'">
+                    <!-- <p class="status" :class="cours.notesValidees ? 'validé' : 'non-validé'">
                         <i :class="cours.notesValidees ? 'bi-lock-fill' : 'bi-unlock-fill'"></i>
                         {{ cours.notesValidees ? 'Validé et Verrouillé' : 'Non validé et Non Verrouillé' }}
-                    </p>
+                    </p> -->
+                    <div class="grp-btns">
+                        <!-- Bouton pour verrouiller -->
+                        <button class="lock-btn" @click="toggleCourseLock(cours.id, true)" v-if="!cours.notesValidees">
+                            <i class="bi-lock"></i> Verrouiller
+                        </button>
+
+                        <!-- Bouton pour déverrouiller -->
+                        <button class="unlock-btn" @click="toggleCourseLock(cours.id, false)"
+                            v-if="cours.notesValidees">
+                            <i class="bi-unlock"></i> Déverrouiller
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -146,6 +170,7 @@ span {
     display: flex;
     align-items: center;
     gap: .2rem;
+    cursor: pointer;
 }
 
 .validé {
@@ -162,7 +187,39 @@ span {
 
 .empty-msg {
     font-style: italic;
-    color: var(--collor-muted);
+    color: var(--color-muted);
+}
+
+.grp-btns {
+    width: 100%;
+}
+
+.grp-btns button {
+    all: unset;
+    width: fill;
+    padding: .5rem 1rem;
+    border-radius: 50px;
+    font-size: 12px;
+    color: var(--color-text-light);
+    text-align: center;
+    cursor: pointer;
+    transition: all .5s ease;
+}
+
+.grp-btns .lock-btn {
+    background-color: var(--color-success);
+}
+
+.grp-btns .lock-btn:hover {
+    opacity: 0.8;
+}
+
+.grp-btns .unlock-btn {
+    background-color: var(--color-danger);
+}
+
+.grp-btns .unlock-btn:hover {
+    opacity: 0.8;
 }
 
 @media (max-width:768px) {
