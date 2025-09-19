@@ -5,7 +5,8 @@ export default {
         return {
             allCourses: [],
             allUsers: [],
-            filter: 'tous'
+            filter: 'tous',
+            isNotif: false
         };
     },
     created() {
@@ -60,9 +61,9 @@ export default {
 
                 localStorage.setItem('schola.notes', JSON.stringify(this.allCourses));
                 this.$emit('notify', `Cours ${lock ? 'verrouillé' : 'déverrouillé'} avec succès`);
-            }
-        }
 
+            }
+        },
     }
 };
 </script>
@@ -98,22 +99,21 @@ export default {
                         <i class="bi-clock-history"></i>
                         {{ formatDate(cours.dateDerniereModification) }}
                     </span>
-                    <!-- <p class="status" :class="cours.notesValidees ? 'validé' : 'non-validé'">
+                    <div class="status" :class="cours.notesValidees ? 'validé' : 'non-validé'">
                         <i :class="cours.notesValidees ? 'bi-lock-fill' : 'bi-unlock-fill'"></i>
                         {{ cours.notesValidees ? 'Validé et Verrouillé' : 'Non validé et Non Verrouillé' }}
-                    </p> -->
-                    <div class="grp-btns">
-                        <!-- Bouton pour verrouiller -->
-                        <button class="lock-btn" @click="toggleCourseLock(cours.id, true)" v-if="!cours.notesValidees">
-                            <i class="bi-lock"></i> Verrouiller
-                        </button>
-
-                        <!-- Bouton pour déverrouiller -->
-                        <button class="unlock-btn" @click="toggleCourseLock(cours.id, false)"
-                            v-if="cours.notesValidees">
-                            <i class="bi-unlock"></i> Déverrouiller
-                        </button>
                     </div>
+                </div>
+                <div class="grp-btns" v-if="isNotif === false">
+                    <!-- Bouton pour verrouiller -->
+                    <button class="lock-btn" @click="toggleCourseLock(cours.id, true)" v-if="!cours.notesValidees">
+                        <i class="bi-lock"></i> Verrouiller
+                    </button>
+
+                    <!-- Bouton pour déverrouiller -->
+                    <button class="unlock-btn" @click="toggleCourseLock(cours.id, false)" v-if="cours.notesValidees">
+                        <i class="bi-unlock"></i> Déverrouiller
+                    </button>
                 </div>
             </div>
         </div>
@@ -145,7 +145,7 @@ export default {
     border: 1px solid var(--color-secondary);
     padding: 15px;
     border-radius: 6px;
-
+    position: relative;
 }
 
 .course-block .stats {
@@ -164,7 +164,7 @@ span {
 
 .status {
     font-weight: bold;
-    padding: 0.3rem 0.5rem;
+    padding: 0.3rem .5rem;
     border-radius: 50px;
     font-size: 12px;
     display: flex;
@@ -192,6 +192,7 @@ span {
 
 .grp-btns {
     width: 100%;
+    margin-top: 1rem;
 }
 
 .grp-btns button {
