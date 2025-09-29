@@ -61,7 +61,6 @@ export default {
 
                 localStorage.setItem('schola.notes', JSON.stringify(this.allCourses));
                 this.$emit('notify', `Cours ${lock ? 'verrouillé' : 'déverrouillé'} avec succès`);
-
             }
         },
     }
@@ -83,12 +82,12 @@ export default {
         <div v-if="filteredCourses.length === 0" class="empty-msg">
             Aucun cours trouvé pour ce filtre.
         </div>
+
         <div class="courses-container">
             <div v-for="cours in filteredCourses" :key="cours.coursId" class="course-block">
-                <h3 class="title">{{ cours.coursNom }} - {{ cours.annee }}ᵉ année -{{ cours.faculte }} </h3>
+                <h3 class="title">{{ cours.coursNom }} - {{ cours.annee }}ᵉ année - {{ cours.faculte }} </h3>
                 <div class="stats">
                     <span><i class="bi-person-fill"></i> {{ getProfName(cours.professeurId) }}</span>
-
                     <span><i class="bi-pie-chart-fill "></i> {{ getAverage(cours) }} </span>
                     <span>
                         <i class="bi-people-fill"></i>
@@ -106,13 +105,13 @@ export default {
                 </div>
                 <div class="grp-btns" v-if="isNotif === false">
                     <!-- Bouton pour verrouiller -->
-                    <button class="lock-btn" @click="toggleCourseLock(cours.id, true)" v-if="!cours.notesValidees">
-                        <i class="bi-lock"></i> Verrouiller
+                    <button class="unlock-btn" @click="toggleCourseLock(cours.id, true)" v-if="!cours.notesValidees">
+                        <i class="bi-unlock"></i> Verrouiller
                     </button>
 
                     <!-- Bouton pour déverrouiller -->
-                    <button class="unlock-btn" @click="toggleCourseLock(cours.id, false)" v-if="cours.notesValidees">
-                        <i class="bi-unlock"></i> Déverrouiller
+                    <button class="lock-btn" @click="toggleCourseLock(cours.id, false)" v-if="cours.notesValidees">
+                        <i class="bi-lock"></i> Déverrouiller
                     </button>
                 </div>
             </div>
@@ -208,7 +207,7 @@ span {
 }
 
 .grp-btns .lock-btn {
-    background-color: var(--color-success);
+    background-color: var(--color-danger);
 }
 
 .grp-btns .lock-btn:hover {
@@ -216,7 +215,7 @@ span {
 }
 
 .grp-btns .unlock-btn {
-    background-color: var(--color-danger);
+    background-color: var(--color-success);
 }
 
 .grp-btns .unlock-btn:hover {

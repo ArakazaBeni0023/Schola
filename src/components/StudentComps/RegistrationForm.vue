@@ -106,67 +106,79 @@ export default {
     <div class="container-form ">
         <h2>Inscription de l'étudiant</h2>
         <form @submit.prevent="submitStudentRegistration" class="form">
-
             <!-- Informations personnelles -->
             <fieldset>
                 <legend>Informations personnelles</legend>
+                <div class="form-group">
+                    <label>Nom *</label>
+                    <input v-model.trim="studentForm.nom" type="text" required class="input" />
+                </div>
+                <div class="form-group">
+                    <label>Prénom *</label>
+                    <input v-model.trim="studentForm.prenom" type="text" required class="input" />
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input v-model.trim="studentForm.email" type="email" required class="input" />
+                </div>
+                <div class="form-group">
+                    <label>Date de naissance *</label>
+                    <input v-model.trim="studentForm.dateNaissance" type="date" required class="input" />
+                </div>
+                <div class="form-group">
+                    <label>Sexe *</label>
+                    <select v-model="studentForm.sexe" required class="select-input">
+                        <option value="">Sélectionner</option>
+                        <option value="M">Masculin</option>
+                        <option value="F">Féminin</option>
+                    </select>
+                </div>
 
-                <label>Nom *</label>
-                <input v-model.trim="studentForm.nom" type="text" required class="input" />
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input v-model.trim="studentForm.telephone" type="tel" class="input" />
+                </div>
 
-                <label>Prénom *</label>
-                <input v-model.trim="studentForm.prenom" type="text" required class="input" />
-
-                <label>Email *</label>
-                <input v-model.trim="studentForm.email" type="email" required class="input" />
-
-                <label>Date de naissance *</label>
-
-                <input v-model.trim="studentForm.dateNaissance" type="date" required class="input" />
-
-                <label>Sexe *</label>
-                <select v-model="studentForm.sexe" required class="select-input">
-                    <option value="">Sélectionner</option>
-                    <option value="M">Masculin</option>
-                    <option value="F">Féminin</option>
-                </select>
-
-                <label>Téléphone</label>
-                <input v-model.trim="studentForm.telephone" type="tel" class="input" />
-
-                <label>Mot de passe *</label>
-                <input v-model.trim="studentForm.motDePasse" type="password" required class="input"
-                    placeholder="min 8 caractères, 1 majuscule, 1 chiffre" />
+                <div class="form-group">
+                    <label>Mot de passe *</label>
+                    <input v-model.trim="studentForm.motDePasse" type="password" required class="input"
+                        placeholder="min 8 caractères, 1 majuscule, 1 chiffre" />
+                </div>
             </fieldset>
 
             <!-- Informations académiques -->
             <fieldset>
                 <legend>Informations académiques</legend>
-
-                <label>Faculté *</label>
-                <select v-model="academicForm.faculte" @change="updateClasses" required class="select-input">
-                    <option value="">Sélectionner une faculté</option>
-                    <option v-for="faculte in facultes" :key="faculte.id" :value="faculte.id">
-                        {{ faculte.nom }}
-                    </option>
-                </select>
-
-                <label>Classe *</label>
-                <select v-model="academicForm.classe" @change="updateCours" required class="select-input">
-                    <option value="">Sélectionner une classe</option>
-                    <option v-for="classe in availableClasses" :key="classe.id" :value="classe.id">
-                        {{ classe.nom }}
-                    </option>
-                </select>
-
-                <label>Cours disponibles *</label>
-                <div class="col">
-                    <div v-for="cours in availableCours" :key="cours.id" class="check-box-input">
-                        <input v-model="academicForm.coursSelectionnes" :value="cours.id" type="checkbox" class="" />
-                        <span>{{ cours.nom }}</span>
-                    </div>
+                <div class="form-group">
+                    <label>Faculté *</label>
+                    <select v-model="academicForm.faculte" @change="updateClasses" required class="select-input">
+                        <option value="">Sélectionner une faculté</option>
+                        <option v-for="faculte in facultes" :key="faculte.id" :value="faculte.id">
+                            {{ faculte.nom }}
+                        </option>
+                    </select>
                 </div>
 
+                <div class="group">
+                    <label>Classe *</label>
+                    <select v-model="academicForm.classe" @change="updateCours" required class="select-input">
+                        <option value="">Sélectionner une classe</option>
+                        <option v-for="classe in availableClasses" :key="classe.id" :value="classe.id">
+                            {{ classe.nom }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Cours disponibles *</label>
+                    <div class="col">
+                        <div v-for="cours in availableCours" :key="cours.id" class="check-box-input">
+                            <input v-model="academicForm.coursSelectionnes" :value="cours.id" type="checkbox"
+                                class="" />
+                            <span>{{ cours.nom }}</span>
+                        </div>
+                    </div>
+                </div>
             </fieldset>
 
             <button type="submit" class="submit-btn">Valider l'inscription</button>
@@ -177,6 +189,7 @@ export default {
 <style scoped>
 .container-form {
     /* max-width: 600px; */
+    width: 100%;
     background-color: var(--color-surface);
     margin: auto;
     gap: 1rem;
@@ -191,10 +204,20 @@ export default {
 }
 
 .container-form .form fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
     margin-top: 20px;
     padding: 12px;
     border: 1px solid var(--color-primary);
     border-radius: 6px;
+}
+
+.container-form .form fieldset .form-group {
+    display: flex;
+    font-size: 12px;
+    flex-direction: column;
+    gap: .2rem;
 }
 
 .container-form .form legend {
@@ -223,10 +246,6 @@ export default {
     border: 1px solid var(--color-primary);
 }
 
-label {
-    font-size: 14px;
-}
-
 .checkbox {
     display: flex;
     align-items: center;
@@ -240,7 +259,6 @@ label {
     color: var(--color-text-light);
     padding: .8rem;
     font-family: "Poppins", sans-serif;
-    font-size: 14px;
     border: none;
     border-radius: 50px;
     font-weight: bold;

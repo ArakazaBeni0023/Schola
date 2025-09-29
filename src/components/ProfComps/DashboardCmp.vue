@@ -30,7 +30,6 @@ export default {
                         const coursEtudie = anneeObj.cours || [];
 
                         const etudiants_list = allStudents.filter(e =>
-
                             e.faculte === affectation.nom && e.annee === anneeObj.annee
                         );
 
@@ -43,13 +42,23 @@ export default {
                         }));
                     });
                 });
+                console.log(this.professorCoursesByYear);
             }
         }
     },
     methods: {
         handleSelect(course) {
             this.onSelectCourse(course);
-        }
+        },
+        /*         getAverage(course) {
+                    const notes = course.etudiants
+                        .map(e => parseFloat(e.notes.finale))
+                        .filter(n => !isNaN(n));
+        
+                    if (notes.length === 0) return '-';
+                    const sum = notes.reduce((a, b) => a + b, 0);
+                    return (sum / notes.length).toFixed(1);
+                }, */
     }
 };
 </script>
@@ -64,6 +73,11 @@ export default {
                     <div class="text-sm">
                         <i class="bi-people-fill"></i>
                         <span>{{ cours.etudiants_list.length }} étudiants</span>
+                    </div>
+                    <div class="text-sm">
+                        <i class="bi-pie-chart-fill"></i>
+                        <!-- {{ getAverage(cours) }} -->
+                        <span>{{  }} points</span>
                     </div>
                 </div>
                 <button v-if="cours.etudiants_list.length" @click="handleSelect(cours)" class="btn">

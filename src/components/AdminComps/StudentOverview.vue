@@ -69,7 +69,6 @@ export default {
     <div class="student-overview-container">
         <h3 class="title">Vue d'ensemble des étudiants ({{ filteredStudents.length }})</h3>
 
-        <!-- <button class="addt-btn bi-plus-lg" @click="showAddForm = true" v-if="!showAddForm"></button> -->
         <!-- Filtre par faculté -->
         <div class="student-overview-container-header">
             <select v-model="selectedFacultyFilter" class="select-input">
@@ -113,8 +112,9 @@ export default {
                             </td>
                             <td>
                                 <div class="crud-btns">
-                                    <button @click="confirmEdit" class="save-btn bi-check-lg"></button>
-                                    <button @click="cancelEdit" class="cancel-btn bi-x-lg"></button>
+                                    <button @click="confirmEdit" class="save-btn bi-check-lg"
+                                        title="Confirmer"></button>
+                                    <button @click="cancelEdit" class="cancel-btn bi-x-lg" title="Annuler"></button>
                                 </div>
                             </td>
                         </template>
@@ -128,8 +128,8 @@ export default {
                                 {{ formatAnnee(etudiant.annee) }}</td>
                             <td>
                                 <div class="crud-btns">
-                                    <button @click="startEdit(etudiant)" class="bi-pencil"></button>
-                                    <!-- <button @click="deleteStudent(etudiant.id)" class="bi-trash"></button> -->
+                                    <button @click="startEdit(etudiant)" class="bi-pencil"
+                                        :title="etudiant.faculte === '-' ? 'Ajouter' : 'Modifier'"></button>
                                 </div>
                             </td>
                         </template>
@@ -231,7 +231,7 @@ export default {
     border: none;
 }
 
-
+/* 
 .crud-btns {
     display: flex;
     gap: .8rem;
@@ -253,5 +253,5 @@ export default {
 .crud-btns .cancel-btn:hover {
     color: var(--color-danger);
     background: var(--color-danger-bg);
-}
+} */
 </style>

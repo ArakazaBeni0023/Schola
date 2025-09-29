@@ -30,6 +30,7 @@ export default {
         saveFacultes() {
             localStorage.setItem('schola.facultes', JSON.stringify(this.facultes));
         },
+
         addCourse() {
             const faculte = this.facultes.find(f => f.id === this.selectedFaculteId);
             if (faculte && this.newCourseName.trim()) {
@@ -46,12 +47,14 @@ export default {
                 this.saveFacultes();
             }
         },
+
         startEditing(course) {
             this.editingCourseId = course.id;
             this.editedCourseName = course.nom;
             this.editedCourseDuration = course.duree;
             this.editedCourseAnneeEtude = course.anneeEtude || 1;
         },
+
         confirmEdit(faculteId) {
             const faculte = this.facultes.find(f => f.id === faculteId);
             if (faculte) {
@@ -74,12 +77,26 @@ export default {
             this.editedCourseName = '';
             this.editedCourseDuration = 3;
         },
+
+        formatAnnee(annee) {
+            return `${annee} ${annee === 1 ? 'ère' : 'ème'}`;
+        },
+
+        deleteCourse(faculteId, courseId) {
+            if (!confirm("Voulez-vous supprimer ce cours?")) return;
+            const faculte = this.facultes.find(f => f.id === faculteId);
+            if (faculte) {
+                faculte.courses = faculte.courses.filter(c => c.id !== courseId);
+                this.saveFacultes();
+            }
+        },
+
     },
 };
 </script>
 
 <template>
-    <div class="course-management-container">
+    <div class="course-management-container" v-show="facultes.length">
         <h3 class="title">Gestion des cours</h3>
 
         <div class="courses-container">
@@ -115,7 +132,7 @@ export default {
                             </div>
                         </div>
                         <div v-else>
-                            {{ course.nom }} ({{ course.duree }} semaines, année {{ course.anneeEtude }})
+                            {{ course.nom }} ({{ course.duree }} semaines, {{ formatAnnee(course.anneeEtude) }} année )
                             <div class="crud-btns">
                                 <button class="edit bi-pencil" @click="startEditing(course)"></button>
                                 <button class="delete bi-trash" @click="deleteCourse(faculte.id, course.id)"></button>
@@ -198,10 +215,8 @@ export default {
 
 .add-course-form {
     width: 40%;
+    margin-bottom: 1rem;
 }
-
-
-/* .modif-course-form {width: 100%;} */
 
 .course-form input {
     all: unset;

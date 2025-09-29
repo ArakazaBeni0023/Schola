@@ -12,7 +12,9 @@ export default {
             tempAffectation: {
                 nom: '',
                 annees: []
-            }
+            },
+            anneesDisponibles: [],
+            isDropdown: false,
         };
     },
     mounted() {
@@ -56,6 +58,11 @@ export default {
         openModal(prof, index = null) {
             this.editingProfessorId = prof.id;
             this.editProfessor = prof;
+
+            if (!this.editProfessor.affectations) {
+                this.editProfessor.affectations = [];
+            }
+
             this.editingAffectationIndex = index;
 
             if (index !== null) {
@@ -72,15 +79,25 @@ export default {
             }
         },
         confirmAffectation() {
+            if (!this.editProfessor.affectations) {
+                this.editProfessor.affectations = [];
+            }
+
             const existingIndex = this.editProfessor.affectations.findIndex(a =>
                 a.nom === this.tempAffectation.nom
             );
 
             if (this.editingAffectationIndex !== null) {
-                this.editProfessor.affectations.splice(this.editingAffectationIndex, 1, JSON.parse(JSON.stringify(this.tempAffectation)));
-            } else if (existingIndex === -1) {
+                this.editProfessor.affectations.splice(
+                    this.editingAffectationIndex,
+                    1,
+                    JSON.parse(JSON.stringify(this.tempAffectation))
+                );
+            }
+            else if (existingIndex === -1) {
                 this.editProfessor.affectations.push(JSON.parse(JSON.stringify(this.tempAffectation)));
-            } else {
+            }
+            else {
                 alert("Cette affectation existe déjà!");
                 return;
             }
@@ -89,6 +106,7 @@ export default {
             this.showModal = false;
         },
         deleteAffectation(index) {
+            if (!confirm("Voulez-vous supprimer cette affectation ?")) return;
             this.editProfessor.affectations.splice(index, 1);
             this.saveProfessors();
         },
@@ -103,12 +121,23 @@ export default {
         },
         removeAnneeFromTemp(annee) {
             this.tempAffectation.annees = this.tempAffectation.annees.filter(a => a.annee !== annee);
-        }
+        },
+        chargerAnneesEtCours(faculteNom) {
+            const fac = this.facultes.find(f => f.nom === faculteNom);
+            if (fac && fac.duree) {
+                this.anneesDisponibles = Array.from({ length: fac.duree }, (_, i) => i + 1);
+            } else {
+                this.anneesDisponibles = [];
+            }
 
+            this.tempAffectation.annees = [];
+        },
+        dropdownActions() {
+            this.isDropdown = !this.isDropdown;
+        }
     }
 };
 </script>
-
 
 <template>
     <div class="prof-overview-container">
@@ -138,29 +167,36 @@ export default {
                         <td>{{ prof.nom }}</td>
                         <td>{{ prof.prenom }}</td>
                         <td>{{ formatAffectations(prof.affectations) }}</td>
-                        <td>
-                            <button @click="openModal(prof)" class="edit-btn">Ajouter</button>
-                            <button v-for="(aff, i) in prof.affectations" :key="i" @click="openModal(prof, i)"
-                                class="edit-btn">
-                                Modifier {{ aff.nom }}
-                            </button>
-                            <button v-for="(aff, i) in prof.affectations" :key="'del-' + i"
-                                @click="deleteAffectation(i)" class="delete-btn">
-                                Supprimer {{ aff.nom }}
-                            </button>
+                        <td class="actions-td">
+                            <button @click="openModal(prof)" class="add-aff-btn bi-plus"
+                                title="Ajouter une affectation"></button>
+                            <div class="dropdown">
+                                <button class="dropdown-toggle" @click="dropdownActions()">Gérer </button>
+                                <div class="dropdown-menu" v-if="isDropdown">
+                                    <button v-for="(aff, i) in prof.affectations"
+                                        class="dropdown-item dropdown-edit-btn bi-pencil" :key="i"
+                                        @click="openModal(prof, i)"> Modifier {{ aff.nom }}
+                                    </button>
+                                    <button v-for="(aff, i) in prof.affectations"
+                                        class="dropdown-item dropdown-delete-btn bi-trash" :key="'del-' + i"
+                                        @click="deleteAffectation(i)"> Supprimer {{ aff.nom }}
+                                    </button>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- Modal -->
+        <!-- Modal ajout & modif -->
         <div v-if="showModal" class="modal-overlay">
             <div class="modal-content">
                 <h4>{{ editingAffectationIndex !== null ? 'Modifier' : 'Nouvelle' }} affectation</h4>
 
                 <label>Faculté:</label>
-                <select v-model="tempAffectation.nom" class="select-input">
+                <select v-model="tempAffectation.nom" class="select-input"
+                    @change="chargerAnneesEtCours(tempAffectation.nom)">
                     <option disabled value="">Choisir une faculté</option>
                     <option v-for="fac in facultes" :key="fac.id" :value="fac.nom">
                         {{ fac.nom }}
@@ -169,19 +205,18 @@ export default {
 
                 <div v-if="tempAffectation.nom">
                     <label>Années:</label>
-                    <div v-for="an in [1, 2, 3]" :key="an">
-                        <input type="checkbox" :checked="tempAffectation.annees.some(a => a.annee === an)" @change="event => {
-                            if (event.target.checked) {
-                                addAnneeToTemp(an);
-                            } else {
-                                removeAnneeFromTemp(an);
-                            }
-                        }" />
-
-
-                        {{ formatAnnee(an) }}
-
-                        <div v-if="tempAffectation.annees.some(a => a.annee === an)">
+                    <div v-for="an in anneesDisponibles" :key="an" class="anneeAffectation">
+                        <label class="check-box-input">
+                            <input type="checkbox" :checked="tempAffectation.annees.some(a => a.annee === an)" @change="event => {
+                                if (event.target.checked) {
+                                    addAnneeToTemp(an);
+                                } else {
+                                    removeAnneeFromTemp(an);
+                                }
+                            }" />
+                            {{ formatAnnee(an) }}
+                        </label>
+                        <div v-if="tempAffectation.annees.some(a => a.annee === an)" class="block-tempAffectation">
                             <select v-model="tempAffectation.annees.find(a => a.annee === an).cours" multiple
                                 class="select-input">
                                 <option v-for="c in getCoursesForFacultyAndYear(tempAffectation.nom, an)" :key="c.id"
@@ -189,14 +224,16 @@ export default {
                                     {{ c.nom }}
                                 </option>
                             </select>
-                            <button @click="removeAnneeFromTemp(an)" class="delete-btn">Retirer année</button>
+                            <button @click="removeAnneeFromTemp(an)" class="delete-btn supprimer-annee-modal-btn bi-x"
+                                title="Retirer l'année">
+                                Retirer l'année</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="modal-actions">
-                    <button @click="confirmAffectation" class="save-btn">Valider</button>
-                    <button @click="showModal = false" class="cancel-btn">Annuler</button>
+                <div class="checking-btns">
+                    <button @click="showModal = false" class="cancel-btn bi-x-lg" title="Annuler"></button>
+                    <button @click="confirmAffectation" class="save-btn bi-check-lg" title="Confirmer"></button>
                 </div>
             </div>
         </div>
@@ -276,6 +313,13 @@ export default {
     background: var(--color-primary-dark);
 }
 
+/* ------  */
+
+.table-container .ced-btns {
+    display: flex;
+    gap: .2rem;
+}
+
 /* ------ td editor */
 
 .td-editor {
@@ -311,13 +355,13 @@ export default {
     border: 1px solid var(--color-accent);
 }
 
-.annee-cours-editor {
+.actions-td {
     display: flex;
-    align-items: center;
-    border: 1px solid #000;
+    gap: .2rem;
 }
 
-.add-affectation-btn,
+.table-container .actions-td .add-aff-btn,
+.ced-btns .edit-btn,
 .delete-btn {
     all: unset;
     padding: 0.2rem .4rem;
@@ -327,58 +371,81 @@ export default {
     text-align: center;
 }
 
-.add-affectation-btn {
-    grid-column: span 1;
-    background: var(--color-primary);
-    color: var(--color-text-light);
-    justify-self: flex-end;
-}
-
-.add-affectation-btn:hover {
-    background: var(--color-primary-dark);
-}
-
 .delete-btn {
-    background: var(--color-danger-bg);
     color: var(--color-danger);
+}
+
+.supprimer-annee-modal-btn {
+    border: 1px solid var(--color-danger);
 }
 
 .delete-btn:hover {
-    background: var(--color-danger);
-    color: var(--color-text-light);
+    background: var(--color-danger-bg);
 }
 
-.add-affectation-btn {
-    padding: 0.2rem .4rem;
-}
-
+.actions-td .add-aff-btn,
 .edit-btn {
     all: unset;
     cursor: pointer;
+    background: var(--hover-lw);
+    border: 2px solid var(--hover-lw);
 }
 
+.actions-td .add-aff-btn:hover,
+.edit-btn:hover {
+    background: var(--hover-lw);
+}
 
-.crud-btns {
+.dropdown {
     display: flex;
-    gap: .8rem;
+    flex-direction: column;
+    gap: .5rem;
 }
 
-.crud-btns button {
+.dropdown-toggle {
     all: unset;
-    padding: 0.2rem .4rem;
+    background: var(--hover-lw);
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    padding: .2rem .8rem;
     border-radius: 5px;
+    width: auto;
+    text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
 }
 
-.crud-btns .save-btn:hover {
-    color: var(--color-success);
+.dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.dropdown-menu .dropdown-item {
+    all: unset;
+    padding: .4rem .5rem;
+    cursor: pointer;
+    font-size: 11px;
+    border-radius: 5px;
+    border: 1px solid #00000000;
+    transition: all .5s ease;
+}
+
+.dropdown-menu .dropdown-edit-btn {
     background: var(--color-success-bg);
+    color: var(--color-success);
 }
 
-.crud-btns .cancel-btn:hover {
-    color: var(--color-danger);
+.dropdown-menu .dropdown-edit-btn:hover {
+    border: 1px solid var(--color-success);
+}
+
+.dropdown-menu .dropdown-delete-btn {
     background: var(--color-danger-bg);
+    color: var(--color-danger);
+}
+
+.dropdown-menu .dropdown-delete-btn:hover {
+    border: 1px solid var(--color-danger);
 }
 
 .modal-overlay {
@@ -398,13 +465,29 @@ export default {
     padding: 20px;
     border-radius: 8px;
     width: 500px;
+    font-size: 14px;
 }
 
-.modal-actions {
-    margin-top: 20px;
+.block-tempAffectation {
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+    flex-direction: column;
+    align-items: start;
+    gap: .5rem;
+}
+
+.block-tempAffectation .delete-btn {
+    font-size: 12px;
+}
+
+.anneeAffectation {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    margin-bottom: .5rem;
+}
+
+.modal-content .checking-btns {
+    margin-top: 1rem;
 }
 
 @media (max-width: 768px) {
@@ -428,26 +511,12 @@ export default {
         grid-template-columns: repeat(1, 1fr);
     }
 
-    /* .affectation-editor {
-                    grid-column: span 1;
-                    height: auto;
-                    flex-direction: column;
-                    align-items: normal;
-                    justify-content: center;
-                } */
     .select-editor {
         width: fit-content;
     }
 
     .select-editor-an {
         width: 100%;
-    }
-
-    .add-affectation-btn {
-        grid-column: span 1;
-        grid-row: span 1;
-        justify-self: normal;
-
     }
 }
 </style>

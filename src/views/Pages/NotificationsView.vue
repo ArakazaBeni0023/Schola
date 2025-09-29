@@ -1,11 +1,13 @@
 <script>
-import PlatformCmp from '@/components/PlatformCmp.vue'
-
+import PlatformCmp from '@/components/PlatformCmp.vue';
+import NewNotif from "@/components/NewNotif.vue"
 export default {
     name: 'NotificationsView',
     components: {
-        PlatformCmp
+        PlatformCmp,
+        NewNotif
     },
+
     data() {
         return {
             notifications: [],
@@ -15,7 +17,8 @@ export default {
             notifDate: '',
             notifLien: '',
             term: '',
-            userRole: ''
+            userRole: '',
+            isNotif: false
         }
     },
 
@@ -25,8 +28,7 @@ export default {
             this.notifications = JSON.parse(stored);
         } else {
             this.notifications = [
-
-                {
+                /* {
                     titre: "Administration",
                     contenue: "Lorem ipsum dolor sit amet...",
                     date: new Date().toISOString(),
@@ -70,7 +72,7 @@ export default {
                     lien: "https://universite.edu/docs/reunion.pdf",
                     cible: ['professeur', 'administration'],
                     lu: false
-                }
+                } */
             ];
             localStorage.setItem('schola.notifications', JSON.stringify(this.notifications));
         }
@@ -138,7 +140,7 @@ export default {
             return `${e}${e === 1 ? ' heure' : ' heures'}`;
         },
         deleteNotif(index) {
-            if (!confirm("Supprimer la notification?")) return;
+            if (!confirm("Voulez-vous supprimer la notification?")) return;
             this.notifications.splice(index, 1);
             localStorage.setItem('schola.notifications', JSON.stringify(this.notifications));
         },
@@ -155,7 +157,9 @@ export default {
                 n.cible.includes(this.userRole) || n.cible.includes('tous')
             );
         },
-
+        showNotifMaker() {
+            this.isNotif = !this.isNotif;
+        }
     }
 }
 </script>
@@ -177,48 +181,15 @@ export default {
                     <div class="notif-viewer-content">
                         <div class="content-header">
                             <h3 class="notif-titre">{{ notifTitre }}</h3>
-                            <small class=""><i class="bi-calendar"></i> {{ new Date(notifDate).toLocaleDateString()
-                                }}</small>
+                            <small class="">
+                                <i class="bi-calendar"></i>
+                                {{ new Date(notifDate).toLocaleDateString()
+                                }}
+                            </small>
                         </div>
 
                         <div class="content-body">
                             {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-                            {{ notifContenue }}
-
                         </div>
 
                         <div class="content-footer">
@@ -232,7 +203,9 @@ export default {
             </div>
 
             <div class="notifications-container" v-else>
-                <h2 class="main-title">Notifications </h2>
+                <div class="notifications-container-header">
+                    <h2>Annonces</h2>
+                </div>
                 <div class="notif-item" v-for="(n, index) in filteredNotifications" :key="index"
                     @click="viewNotif(index)" :class="{ 'readed': n.lu, }">
                     <span :class="`badge ${getTypeClass(n.type)}`"></span>
@@ -249,17 +222,23 @@ export default {
             </div>
         </div>
     </PlatformCmp>
+    <button class="add-btn new-notif-btn" v-if="isNotif === false" @click="showNotifMaker()"><i class="bi-pencil"></i>
+        Nouvelle annonce</button>
+    <NewNotif v-show="isNotif" class="new-notif" @close="showNotifMaker" />
 </template>
-
 
 <style scoped>
 .container-fluid {
     padding-block: 1rem;
     height: 100vh;
     overflow: auto;
+    position: relative;
 }
 
-.main-title {
+.notifications-container-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
     margin-bottom: 2rem;
 }
 
@@ -446,6 +425,29 @@ export default {
     font-size: 12px;
 }
 
+/* new-notif */
+.new-notif-btn,
+.new-notif {
+    position: absolute;
+    bottom: 3%;
+    right: 3%;
+    z-index: 1000;
+    box-shadow: var(--shadow);
+}
+
+.new-notif-btn {
+    /* background-color: var(--color-surface); */
+    background-color: var(--color-primary-dark);
+    color: var(--color-text-light);
+    border-radius: 50px;
+    padding: .8rem 1rem;
+    border: none;
+}
+
+.new-notif-btn:hover {
+    background-color: var(--color-primary);
+}
+
 @media (max-width:768px) {
     .container-fluid {
         padding-inline-end: .5rem;
@@ -457,6 +459,17 @@ export default {
 
     .notifications-container {
         width: 100%;
+    }
+}
+
+@media (max-width:768px) {
+    .new-notif {
+        width: 100%;
+        height: 100%;
+        top: 0%;
+        right: 0%;
+        border-radius: 0px;
+        border: none;
     }
 }
 </style>

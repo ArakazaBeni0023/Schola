@@ -78,10 +78,6 @@ export default {
             });
             return counts;
         },
-        /* getStudentCountByFaculty(fac) {
-            const counts = 0;
-            return counts;
-        }, */
         formatAnnee(annee) {
             if (!annee) return '-';
             return `${annee}${annee === 1 ? ' ère' : ' ème'}`;
@@ -341,7 +337,7 @@ export default {
     bottom: 5%;
     right: 5%;
     display: flex;
-    gap: 1rem;
+    gap: .5rem;
     opacity: 0;
     transition: opacity .5s ease;
 }

@@ -149,14 +149,13 @@ table {
 
 .calendrier {
     width: 100%;
-    /* width: fit-content; */
-    /* height: fit-content; */
     background-color: var(--color-background);
     color: var(--color-text);
     font-family: 'Poppins', sans-serif;
     border-radius: 15px;
     padding: .5rem;
     z-index: 1;
+    border: 1px solid var(--hover-lw);
 }
 
 .checking-btns {
@@ -200,4 +199,27 @@ table {
     100% {
         margin-top: 0;
     }
+}
+
+.crud-btns {
+    display: flex;
+    gap: .8rem;
+}
+
+.crud-btns button {
+    all: unset;
+    padding: 0.2rem .4rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.crud-btns .save-btn:hover {
+    color: var(--color-success);
+    background: var(--color-success-bg);
+}
+
+.crud-btns .cancel-btn:hover {
+    color: var(--color-danger);
+    background: var(--color-danger-bg);
 }

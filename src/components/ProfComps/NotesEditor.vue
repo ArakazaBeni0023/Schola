@@ -121,7 +121,6 @@ export default {
 };
 </script>
 
-
 <template>
     <div class="table-container-fluid">
         <div class="table-container-header">
@@ -157,7 +156,7 @@ export default {
                 </tbody>
             </table>
         </div>
-        <div>
+        <div class="group-btns">
             <button v-if="!notesIsValide" class="valide-btn" @click="saveCourseNotes">
                 Enregistrer les notes
             </button>
@@ -169,7 +168,6 @@ export default {
     </div>
 </template>
 
-
 <style scoped>
 .td-editor {
     padding: 0 .5rem;
@@ -179,6 +177,11 @@ export default {
     width: 100%;
     padding: .5rem .2rem;
     border: none;
+}
+
+.group-btns {
+    display: flex;
+    gap: 2rem;
 }
 
 .valide-btn {
@@ -196,6 +199,7 @@ export default {
 .valide-btn:hover {
     background: var(--color-primary);
 }
+
 
 .locked-msg {
     background: var(--color-success-bg);

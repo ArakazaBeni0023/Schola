@@ -33,7 +33,7 @@ export default {
                     link: '/notifications',
                     icon: 'bi-bell',
                     iconFill: 'bi-bell-fill',
-                    title: 'Notifs'
+                    title: 'Annonces'
                 },
                 {
                     link: '/settings',
@@ -48,6 +48,7 @@ export default {
 
     methods: {
         logout() {
+            if (!confirm("Voulez-vous vous déconnecter ?")) return;
             this.currentUser = null;
             localStorage.removeItem('schola.currentUser');
             window.location.reload()

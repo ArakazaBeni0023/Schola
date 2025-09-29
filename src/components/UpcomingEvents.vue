@@ -7,20 +7,17 @@ export default {
                 {
                     subject: 'Biologie',
                     time: '9:00 am',
-                    description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste eum culpa quas.',
-                    interval: '9:00 am - 10:00 am',
+                    interval: '2h',
                 },
                 {
                     subject: 'Chimie',
                     time: '11:00 am',
-                    description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste eum culpa quas.',
-                    interval: '11:00 am - 12:00 pm',
+                    interval: '1h',
                 },
                 {
                     subject: 'Physique',
                     time: '1:00 pm',
-                    description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste eum culpa quas.',
-                    interval: '1:00 pm - 2:00 pm',
+                    interval: '2h',
                 }
             ],
             attributes: [
@@ -85,6 +82,7 @@ export default {
 .schedule-header h4 {
     text-align: center;
     color: var(--color-secondary);
+    padding-block: .5rem;
 }
 
 .schedule-header hr {
@@ -97,14 +95,14 @@ export default {
 }
 
 .schedule-body .event {
-    height: 50px;
+    height: 65px;
     gap: .5rem;
 }
 
 .saparator {
     border-radius: 50px;
     width: 10px;
-    height: 100%;
+    height: 70%;
     background: var(--color-primary-dark);
 }
 
@@ -127,7 +125,16 @@ export default {
 }
 
 .schedule-body .event .interval {
-    min-width: 100px;
+    min-width: 20px;
     text-align: end;
+}
+
+@media (max-width:768px) {
+    .schedule {
+        gap: 2rem;
+        padding: 1rem;
+        border-radius: 15px;
+        border: 1px solid var(--hover-lw);
+    }
 }
 </style>

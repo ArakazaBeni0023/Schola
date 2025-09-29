@@ -2,10 +2,21 @@
 export default {
     data() {
         return {
-
             schedule: [
-                { jour: 'Lundi', heure: '08:00-10:00', cours: 'Programmation Web', professeur: 'M. Martin', salle: 'A101' },
-                { jour: 'Mardi', heure: '10:00-12:00', cours: 'Base de données', professeur: 'Mme. Durand', salle: 'B205' }
+                {
+                    jour: 'Lundi',
+                    heure: '08:00-10:00',
+                    cours: 'Programmation Web',
+                    professeur: 'M. Martin',
+                    salle: 'A101'
+                },
+                {
+                    jour: 'Mardi',
+                    heure: '10:00-12:00',
+                    cours: 'Base de données',
+                    professeur: 'Mme. Durand',
+                    salle: 'B205'
+                }
             ],
 
             jours: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'],

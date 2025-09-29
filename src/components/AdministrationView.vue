@@ -6,6 +6,8 @@ import CoursesManagement from './AdminComps/CoursesManagement.vue';
 import StudentOverview from './AdminComps/StudentOverview.vue';
 import ProfOverview from './AdminComps/ProfOverview.vue';
 import ValidatedCourses from './AdminComps/ValidatedCourses.vue';
+import TimetableCreator from './AdminComps/TimetableCreator.vue';
+import TimetableViewer from './AdminComps/TimetableViewer.vue';
 
 export default {
     name: 'AdministrationView',
@@ -16,7 +18,9 @@ export default {
         CoursesManagement,
         ProfOverview,
         StudentOverview,
-        ValidatedCourses
+        ValidatedCourses,
+        TimetableCreator,
+        TimetableViewer
     },
 
     data() {
@@ -56,6 +60,12 @@ export default {
 
             <!-- Validated Courses -->
             <ValidatedCourses />
+
+            <!-- Createur Horaire  -->
+            <TimetableCreator />
+
+            <!-- Validated Courses -->
+            <TimetableViewer />
 
             <!----------------------- displaying for mobile only -->
             <VCalendar class="calendrier" :attributes="attributes" />
