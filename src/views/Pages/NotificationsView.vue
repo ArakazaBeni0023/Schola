@@ -470,21 +470,3 @@ export default {
     }
 }
 </style>
-
-<!--
-
-admin niwe yemerewe kwandika gusa amatangazo 'Annonces' no kuyafuta
-mugihe umuntu yi konegse, app ica iraba ama annonce mashasha id yayo igaca yiyongera muri 
-table yama annonce [] y'umwumwe wese kugira nogufuta umuntu afute ibibitse muri notif yiwe,
-bituma kijanye no kumenya niba itangazo wararisomye, biba kuma tangazo yumwumwe wese.
-mukwafisha ama annonce batora muri table yiwe bwite.
-
-(umuntu yogira kuburyo admin abona igitigiri cabamaze kuyisoma) 
-
-c'est seulement l'admin qui est autorisé à ecrire les annoces et de supprimer
-l'utilisateur qui est connecté, l'app prend l'id les nouvelles annonces et les ajout dans la table "annonces" de l'utilisateur connecté
-pour que l'utilisateur puisse supprimer les annonces qui contient dans sa table des annonces
-savoir si l'annonce a été lu, ça se passe sur chaque utilisateur individuellement.
-
-dit moi comment je pourrais faire pour que l'admin puisse savoir le nombre des utilisateur qui ont lu l'annonce
--->
