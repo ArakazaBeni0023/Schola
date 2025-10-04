@@ -15,6 +15,7 @@ export default {
                 cible: "tous",
                 lu: false
             },
+            attachedFiles: []
         }
     },
     methods: {
@@ -23,6 +24,38 @@ export default {
             this.cible = "Tous";
             this.type = "Urgence";
         },
+        triggerFileInput() {
+            this.$refs.fileInput.click();
+        },
+
+        handleFileUpload(event) {
+            const files = Array.from(event.target.files);
+            const allowedTypes = [
+                'image/jpeg', 'image/png',
+                'application/pdf', 'text/plain',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ];
+
+            files.forEach(file => {
+                if (allowedTypes.includes(file.type)) {
+                    this.attachedFiles.push({
+                        name: file.name,
+                        url: URL.createObjectURL(file),
+                        type: file.type
+                    });
+                } else {
+                    alert(`Fichier non autorisé: ${file.name}`);
+                }
+            });
+
+            event.target.value = null;
+        },
+
+        removeFile(index) {
+            this.attachedFiles.splice(index, 1);
+        },
+
         sendNotif() {
             if (!this.newNotif.titre || !this.newNotif.contenue) {
                 alert("Veuillez remplir le titre et le message.");
@@ -33,6 +66,7 @@ export default {
             this.newNotif.type = this.type.toLowerCase();
             this.newNotif.cible = this.cible.toLowerCase();
             this.newNotif.lu = false;
+            this.newNotif.fichiers = [...this.attachedFiles];
 
             this.$emit('add', { ...this.newNotif });
 
@@ -41,16 +75,19 @@ export default {
                 contenue: "",
                 date: new Date().toISOString(),
                 type: "",
-                lien: "",
                 cible: "tous",
-                lu: false
+                lu: false,
+                fichiers: []
             };
+            this.attachedFiles = [];
             this.cible = "Tous";
             this.type = "Urgence";
             this.$emit('close');
-        }
+        },
     }
+
 }
+
 </script>
 
 <template>
@@ -81,9 +118,23 @@ export default {
                 <input type="text" placeholder="Objet" v-model="newNotif.titre">
                 <textarea v-model="newNotif.contenue" placeholder="Votre message..."></textarea>
             </div>
+
+            <div class="attached-file" v-if="attachedFiles.length">
+                <div class="file" v-for="(file, index) in attachedFiles" :key="index">
+                    {{ file.name }}
+                    <i class="bi-x" @click="removeFile(index)"></i>
+                </div>
+            </div>
+
+
             <div class="btns-group">
                 <button class="add-btn" @click="sendNotif">Envoyer <i class="bi-send"></i></button>
-                <button aria-hidden=" true" data-icon="&#xe02d;"></button>
+                <button class="attach-file" @click="triggerFileInput">
+                    <i class="bi-paperclip"></i>
+                </button>
+                <input type="file" ref="fileInput" multiple @change="handleFileUpload"
+                    accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.txt" style="display: none" />
+
             </div>
         </div>
     </div>
@@ -192,6 +243,37 @@ export default {
     align-items: center;
 }
 
+/* attach file */
+.attached-file {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+}
+
+.attached-file .file {
+    background: var(--hover-lw);
+    border: 1px solid var(--color-primary);
+    padding: .6em 1rem;
+    border-radius: 50px;
+    font-size: 12px;
+    transition: all .5s ease;
+    cursor: pointer;
+}
+
+.attached-file .file .bi-x {
+    margin-left: .5rem;
+    cursor: pointer;
+}
+
+.attached-file .file .bi-x:hover {
+    transform: scale(1.1);
+}
+
+.attached-file .file:hover {
+    background: var(--color-accent);
+}
+
 .form-group select {
     width: 100%;
 }
@@ -223,6 +305,9 @@ export default {
     border-radius: 50px;
     padding: 0.8rem 1.5rem;
 }
+
+
+
 
 @media (max-width:768px) {
     .new-notif {

@@ -1,6 +1,7 @@
 <script>
 import PlatformCmp from '@/components/PlatformCmp.vue';
-import NewNotif from "@/components/NewNotif.vue"
+import NewNotif from "@/components/NewNotif.vue";
+
 export default {
     name: 'NotificationsView',
     components: {
@@ -18,36 +19,57 @@ export default {
             notifLien: '',
             term: '',
             userRole: '',
-            isNotif: false
+            userId: '',
+            isNotif: false,
+            users: []
         }
     },
 
     created() {
         const stored = localStorage.getItem('schola.notifications');
-        if (stored) {
-            this.notifications = JSON.parse(stored);
-        } else {
-            this.notifications = [];
-            localStorage.setItem('schola.notifications', JSON.stringify(this.notifications));
-        }
+        this.notifications = stored ? JSON.parse(stored) : [];
+        localStorage.setItem('schola.notifications', JSON.stringify(this.notifications));
 
-        const currentUser = localStorage.getItem('schola.currentUser');
-        if (currentUser) {
+        const currentUserRaw = localStorage.getItem('schola.currentUser');
+        const allUsersRaw = localStorage.getItem('schola.users');
+
+        if (currentUserRaw && allUsersRaw) {
             try {
-                this.userRole = JSON.parse(currentUser).role;
+                const currentUser = JSON.parse(currentUserRaw);
+                this.userRole = currentUser.role;
+                this.userId = currentUser.id;
+                this.users = JSON.parse(allUsersRaw);
+
+                const userIndex = this.users.findIndex(u => u.id === this.userId);
+                if (userIndex !== -1) {
+                    const user = this.users[userIndex];
+                    if (!user.annonces) {
+                        const targetedNotifIds = this.notifications
+                            .filter(n => n.cible.includes(user.role) || n.cible.includes('tous'))
+                            .map(n => n.id);
+                        this.users[userIndex].annonces = targetedNotifIds;
+                        localStorage.setItem('schola.users', JSON.stringify(this.users));
+                    }
+                }
             } catch (e) {
-                console.warn('Erreur lors du parsing de schola.currentUser', e);
-                this.$router.push('/')
+                console.warn('Erreur lors du parsing de schola.currentUser ou schola.users', e);
+                this.$router.push('/');
             }
         } else {
-            this.$router.push('/')
+            this.$router.push('/');
         }
     },
 
     computed: {
+        userNotifications() {
+            const user = this.users.find(u => u.id === this.userId);
+            if (!user || !user.annonces) return [];
+            return this.sortedNotifications.filter(n => user.annonces.includes(n.id));
+        },
+
         filteredNotifications() {
             const term = this.term.trim().toLowerCase();
-            return this.notifications.filter(n =>
+            return this.userNotifications.filter(n =>
                 n.titre.toLowerCase().includes(term) ||
                 n.contenue.toLowerCase().includes(term)
             );
@@ -55,14 +77,6 @@ export default {
 
         sortedNotifications() {
             return [...this.notifications].sort((a, b) => new Date(b.date) - new Date(a.date));
-        },
-
-        filteredByRole() {
-            const role = this.userRole.toLowerCase();
-            return this.sortedNotifications.filter(n =>
-                n.cible.map(c => c.toLowerCase()).includes(role) ||
-                n.cible.map(c => c.toLowerCase()).includes('tous')
-            );
         }
     },
 
@@ -72,25 +86,42 @@ export default {
         },
 
         viewNotif(index) {
-            const notif = this.notifications[index];
+            const notif = this.filteredNotifications[index];
+            const notifIndex = this.notifications.findIndex(n => n.id === notif.id);
             const currentUser = JSON.parse(localStorage.getItem('schola.currentUser'));
             const userId = currentUser.id;
 
             this.notifTitre = notif.titre;
             this.notifContenue = notif.contenue;
             this.notifDate = notif.date;
-            this.notifLien = notif.lien;
             this.focusNotif = true;
 
-            this.notifications[index].lu = true;
+            this.notifications[notifIndex].lu = true;
 
-            if (!notif.lusPar) notif.lusPar = [];
-            if (!notif.lusPar.includes(userId)) {
-                notif.lusPar.push(userId);
+            if (!this.notifications[notifIndex].lusPar) this.notifications[notifIndex].lusPar = [];
+            if (!this.notifications[notifIndex].lusPar.includes(userId)) {
+                this.notifications[notifIndex].lusPar.push(userId);
             }
 
             localStorage.setItem('schola.notifications', JSON.stringify(this.notifications));
+
+            this.notifFichiers = notif.fichiers || [];
         },
+
+        deleteNotif(index) {
+            const notifId = this.filteredNotifications[index].id;
+            const userIndex = this.users.findIndex(u => u.id === this.userId);
+            if (userIndex === -1) return;
+
+            if (this.isAdmin()) {
+                this.notifications = this.notifications.filter(n => n.id !== notifId);
+                localStorage.setItem('schola.notifications', JSON.stringify(this.notifications));
+            } else {
+                this.users[userIndex].annonces = this.users[userIndex].annonces.filter(id => id !== notifId);
+                localStorage.setItem('schola.users', JSON.stringify(this.users));
+            }
+        },
+
         timeSince(date) {
             const now = new Date();
             const past = new Date(date);
@@ -104,20 +135,17 @@ export default {
             if (minutes > 0) return `${minutes} min.`;
             return `${seconds} sec.`;
         },
+
         formatJour(e) {
             if (!e) return '-';
-            return `${e}${e === 1 ? ' jour' : ' jours'}`;
+            return `${e} ${e === 1 ? ' jour' : ' jours'}`;
         },
+
         formaHeure(e) {
             if (!e) return '-';
-            return `${e}${e === 1 ? ' heure' : ' heures'}`;
+            return `${e}  ${e === 1 ? ' heure' : ' heures'}`;
         },
-        deleteNotif(index) {
-            if (this.userRole !== 'admin') return;
-            if (!confirm("Voulez-vous supprimer la notification?")) return;
-            this.notifications.splice(index, 1);
-            localStorage.setItem('schola.notifications', JSON.stringify(this.notifications));
-        },
+
         getTypeClass(type) {
             switch (type) {
                 case 'urgence': return 'bg-danger';
@@ -126,22 +154,37 @@ export default {
                 default: return 'bg-light';
             }
         },
-        getNotificationsByRole() {
-            return this.sortedNotifications.filter(n =>
-                n.cible.includes(this.userRole) || n.cible.includes('tous')
-            );
-        },
+
         showNotifMaker() {
             this.isNotif = !this.isNotif;
         },
+
         addNotification(notif) {
+            notif.id = `notif_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
             notif.lusPar = [];
             this.notifications.unshift(notif);
             localStorage.setItem('schola.notifications', JSON.stringify(this.notifications));
+
+            this.users.forEach(user => {
+                if (notif.cible.includes(user.role) || notif.cible.includes('tous')) {
+                    if (!user.annonces) user.annonces = [];
+                    user.annonces.push(notif.id);
+                }
+            });
+            localStorage.setItem('schola.users', JSON.stringify(this.users));
+        },
+        downloadFile(file) {
+            const link = document.createElement('a');
+            link.href = file.base64;
+            link.download = file.name;
+            link.click();
         }
+
+
     }
 }
 </script>
+
 
 <template>
     <PlatformCmp>
@@ -149,7 +192,6 @@ export default {
             <div class="search-block">
                 <i class="bi-search"></i>
                 <input type="text" v-model.trim="term" placeholder="Rechercher dans les notifications...">
-                <i class="bi-filter"></i>
             </div>
 
             <div v-if="focusNotif" class="notifications-container">
@@ -172,9 +214,13 @@ export default {
                         </div>
 
                         <div class="content-footer">
-                            <a v-if="notifLien" :href="notifLien" target="_blank" class="btn-outline-info">
-                                <i class="bi-link-45deg"></i>
-                                Voir le document</a>
+                            <div v-if="notifFichiers.length" class="attached-docs">
+                                <div class="file" v-for="(file, index) in notifFichiers" :key="index">
+                                    <div @click="downloadFile(file)">
+                                        <i class="bi-download"></i> {{ file.name }}
+                                    </div>
+                                </div>
+                            </div>
                             <small class="timeSince">Publié il y a {{ timeSince(notifDate) }}</small>
                         </div>
                     </div>
@@ -195,9 +241,12 @@ export default {
                             <p>{{ n.contenue }}</p>
                         </div>
                         <small class="time-since">{{ timeSince(n.date) }}</small>
+                        <small v-if="isAdmin() && n.lusPar" class="notif-read-count">
+                            {{ n.lusPar.length }} <i class="bi-eye"> vues</i>
+                        </small>
+
                     </div>
-                    <button v-if="userRole === 'admin'" class="delete-btn bi-trash"
-                        @click.stop="deleteNotif(index)"></button>
+                    <button class="delete-btn bi-trash" @click.stop="deleteNotif(index)"></button>
                 </div>
                 <p class="muted-text" v-if="filteredNotifications.length === 0">
                     <i class="bi-box-open"></i> Aucune annonce pour l’instant.
@@ -391,11 +440,21 @@ export default {
     border-top: 1px solid var(--hover-lw);
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding-block-start: .5rem;
+    gap: 1rem;
 }
 
-.content-footer .btn-outline-info {
+/* attach file */
+.attached-docs {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.attached-docs .file {
     background: var(--hover-lw);
     border: 1px solid var(--color-primary);
     padding: .6em 1rem;
@@ -405,7 +464,16 @@ export default {
     cursor: pointer;
 }
 
-.content-footer .btn-outline-info:hover {
+.attached-docs .file .bi-x {
+    margin-left: .5rem;
+    cursor: pointer;
+}
+
+.attached-docs.file .bi-x:hover {
+    transform: scale(1.1);
+}
+
+.attached-docs .file:hover {
     background: var(--color-accent);
 }
 
@@ -436,6 +504,20 @@ export default {
 .new-notif-btn:hover {
     background-color: var(--color-primary);
 }
+
+
+/* preview */
+.preview-img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.file-preview {
+    margin-bottom: 20px;
+}
+
+
 
 @media (max-width:768px) {
     .container-fluid {
