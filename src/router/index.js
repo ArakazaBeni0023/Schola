@@ -4,7 +4,7 @@ import HomeView from '../views/Pages/HomeView.vue'
 const routes = [
   {
     path: '/',
-    name: 'Accueil | ',
+    name: 'Accueil |',
     meta: {
     },
     component: HomeView
@@ -29,7 +29,7 @@ const routes = [
       name: 'Paramètres | ',
     },
     component: () => import('../views/Pages/SettingsView.vue')
-  },  
+  },
 ]
 
 const router = createRouter({

@@ -31,7 +31,6 @@ export default {
 </script>
 
 <template>
-    <!---->
     <PlatformCmp v-if="currentUserRole">
         <AdministrationView v-if="currentUserRole === 'admin'" />
         <ProfView v-else-if="currentUserRole === 'professeur'" />

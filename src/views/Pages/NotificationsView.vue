@@ -27,53 +27,7 @@ export default {
         if (stored) {
             this.notifications = JSON.parse(stored);
         } else {
-            this.notifications = [
-                /* {
-                    titre: "Administration",
-                    contenue: "Lorem ipsum dolor sit amet...",
-                    date: new Date().toISOString(),
-                    type: "administratif",
-                    lien: "https://universite.edu/docs/reunion.pdf",
-                    cible: ["étudiant"],
-                    lu: false
-                },
-                {
-                    titre: "Prof Manirambona",
-                    contenue: "Lorem ipsum dolor sit amet...",
-                    date: new Date().toISOString(),
-                    type: "pédagogique",
-                    lien: "https://universite.edu/docs/reunion.pdf",
-                    cible: ["tous"],
-                    lu: false
-                },
-                {
-                    titre: "Notif 3",
-                    contenue: "Lorem ipsum dolor sit amet...",
-                    date: new Date().toISOString(),
-                    type: "urgence",
-                    lien: "https://universite.edu/docs/reunion.pdf",
-                    cible: ['étudiant', 'professeur', 'administration'],
-                    lu: false
-                },
-                {
-                    titre: "Notif 4",
-                    contenue: "Lorem ipsum dolor sit amet...",
-                    date: new Date().toISOString(),
-                    type: "pédagogique",
-                    lien: "",
-                    cible: ["professeur"],
-                    lu: false
-                },
-                {
-                    titre: "Notif 5",
-                    contenue: "Lorem ipsum dolor sit amet...",
-                    date: new Date().toISOString(),
-                    type: "administratif",
-                    lien: "https://universite.edu/docs/reunion.pdf",
-                    cible: ['professeur', 'administration'],
-                    lu: false
-                } */
-            ];
+            this.notifications = [];
             localStorage.setItem('schola.notifications', JSON.stringify(this.notifications));
         }
 
@@ -92,30 +46,49 @@ export default {
 
     computed: {
         filteredNotifications() {
+            const term = this.term.trim().toLowerCase();
             return this.notifications.filter(n =>
-                n.titre.toLowerCase().includes(this.term.toLowerCase()) ||
-                n.contenue.toLowerCase().includes(this.term.toLowerCase())
+                n.titre.toLowerCase().includes(term) ||
+                n.contenue.toLowerCase().includes(term)
             );
         },
-        /*  sortedNotifications() {
-             const res = this.notifications.sort((a, b) => new Date(b.date) - new Date(a.date));
-             return res;
-         },
-         filteredByRole() {
-             const role = this.userRole;
-             return this.sortedNotifications.filter(n => n.cible.includes(role) || n.cible.includes('tous'));
-         } */
+
+        sortedNotifications() {
+            return [...this.notifications].sort((a, b) => new Date(b.date) - new Date(a.date));
+        },
+
+        filteredByRole() {
+            const role = this.userRole.toLowerCase();
+            return this.sortedNotifications.filter(n =>
+                n.cible.map(c => c.toLowerCase()).includes(role) ||
+                n.cible.map(c => c.toLowerCase()).includes('tous')
+            );
+        }
     },
 
     methods: {
+        isAdmin() {
+            return this.userRole.toLowerCase() === 'admin';
+        },
+
         viewNotif(index) {
             const notif = this.notifications[index];
+            const currentUser = JSON.parse(localStorage.getItem('schola.currentUser'));
+            const userId = currentUser.id;
+
             this.notifTitre = notif.titre;
             this.notifContenue = notif.contenue;
             this.notifDate = notif.date;
             this.notifLien = notif.lien;
             this.focusNotif = true;
+
             this.notifications[index].lu = true;
+
+            if (!notif.lusPar) notif.lusPar = [];
+            if (!notif.lusPar.includes(userId)) {
+                notif.lusPar.push(userId);
+            }
+
             localStorage.setItem('schola.notifications', JSON.stringify(this.notifications));
         },
         timeSince(date) {
@@ -140,6 +113,7 @@ export default {
             return `${e}${e === 1 ? ' heure' : ' heures'}`;
         },
         deleteNotif(index) {
+            if (this.userRole !== 'admin') return;
             if (!confirm("Voulez-vous supprimer la notification?")) return;
             this.notifications.splice(index, 1);
             localStorage.setItem('schola.notifications', JSON.stringify(this.notifications));
@@ -159,6 +133,11 @@ export default {
         },
         showNotifMaker() {
             this.isNotif = !this.isNotif;
+        },
+        addNotification(notif) {
+            notif.lusPar = [];
+            this.notifications.unshift(notif);
+            localStorage.setItem('schola.notifications', JSON.stringify(this.notifications));
         }
     }
 }
@@ -217,14 +196,20 @@ export default {
                         </div>
                         <small class="time-since">{{ timeSince(n.date) }}</small>
                     </div>
-                    <button class="delete-btn bi-trash" @click.stop="deleteNotif(index)"></button>
+                    <button v-if="userRole === 'admin'" class="delete-btn bi-trash"
+                        @click.stop="deleteNotif(index)"></button>
                 </div>
+                <p class="muted-text" v-if="filteredNotifications.length === 0">
+                    <i class="bi-box-open"></i> Aucune annonce pour l’instant.
+                </p>
             </div>
         </div>
     </PlatformCmp>
-    <button class="add-btn new-notif-btn" v-if="isNotif === false" @click="showNotifMaker()"><i class="bi-pencil"></i>
-        Nouvelle annonce</button>
-    <NewNotif v-show="isNotif" class="new-notif" @close="showNotifMaker" />
+    <button class="add-btn new-notif-btn" v-if="isNotif === false && userRole === 'admin'" @click="showNotifMaker()">
+        <i class="bi-pencil"></i>
+        Nouvelle annonce
+    </button>
+    <NewNotif v-show="isNotif" class="new-notif" @close="showNotifMaker" @add="addNotification" />
 </template>
 
 <style scoped>
@@ -288,6 +273,10 @@ export default {
     height: 60px;
     padding-inline-end: 1rem;
     transition: all .5s ease;
+}
+
+.muted-text {
+    color: var(--color-muted);
 }
 
 .notifications-container .notif-item:hover:not(.readed) {
@@ -460,9 +449,7 @@ export default {
     .notifications-container {
         width: 100%;
     }
-}
 
-@media (max-width:768px) {
     .new-notif {
         width: 100%;
         height: 100%;
@@ -472,4 +459,32 @@ export default {
         border: none;
     }
 }
+
+@media (max-width:468px) {
+    .container-fluid {
+        padding-inline: 1rem;
+    }
+
+    .new-notif-btn {
+        bottom: 15%;
+    }
+}
 </style>
+
+<!--
+
+admin niwe yemerewe kwandika gusa amatangazo 'Annonces' no kuyafuta
+mugihe umuntu yi konegse, app ica iraba ama annonce mashasha id yayo igaca yiyongera muri 
+table yama annonce [] y'umwumwe wese kugira nogufuta umuntu afute ibibitse muri notif yiwe,
+bituma kijanye no kumenya niba itangazo wararisomye, biba kuma tangazo yumwumwe wese.
+mukwafisha ama annonce batora muri table yiwe bwite.
+
+(umuntu yogira kuburyo admin abona igitigiri cabamaze kuyisoma) 
+
+c'est seulement l'admin qui est autorisé à ecrire les annoces et de supprimer
+l'utilisateur qui est connecté, l'app prend l'id les nouvelles annonces et les ajout dans la table "annonces" de l'utilisateur connecté
+pour que l'utilisateur puisse supprimer les annonces qui contient dans sa table des annonces
+savoir si l'annonce a été lu, ça se passe sur chaque utilisateur individuellement.
+
+dit moi comment je pourrais faire pour que l'admin puisse savoir le nombre des utilisateur qui ont lu l'annonce
+-->

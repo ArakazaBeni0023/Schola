@@ -16,7 +16,8 @@ export default {
             enseignant: '',
             salle: '',
             jours: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'],
-            heures: ['08:00–10:00', '10:00–12:00', '14:00–16:00', '16:00–18:00']
+            heures: ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'],
+
         };
     },
     computed: {
@@ -42,13 +43,13 @@ export default {
         },
         enregistrerHoraire() {
             const cours = this.coursDisponibles.find(c => c.id === this.coursId);
-            const [heureDebut, heureFin] = this.heure.split('–');
+            const [heureDebut, heureFin] = this.heure.includes('–')
+                ? this.heure.split('–')
+                : [this.heure, this.addOneHour(this.heure)];
 
-            const nouveauHoraire = {
-                faculteId: this.faculteId,
+            const nouveauCours = {
                 coursId: this.coursId,
                 nomCours: cours.nom,
-                jour: this.jour,
                 heureDebut,
                 heureFin,
                 enseignant: this.enseignant,
@@ -56,9 +57,30 @@ export default {
                 anneeEtude: parseInt(this.anneeEtude)
             };
 
-            const horairesExistants = JSON.parse(localStorage.getItem('schola.horaires') || '[]');
-            horairesExistants.push(nouveauHoraire);
-            localStorage.setItem('schola.horaires', JSON.stringify(horairesExistants));
+            let horaires = JSON.parse(localStorage.getItem('schola.horaires') || '[]');
+
+            let faculte = horaires.find(f => f.faculteId === this.faculteId);
+            if (!faculte) {
+                faculte = {
+                    faculteId: this.faculteId,
+                    nomFaculte: this.facultes.find(f => f.id === this.faculteId)?.nom || '',
+                    horaires: []
+                };
+                horaires.push(faculte);
+            }
+
+            let jourBloc = faculte.horaires.find(h => h.jour === this.jour);
+            if (!jourBloc) {
+                jourBloc = {
+                    jour: this.jour,
+                    cours: []
+                };
+                faculte.horaires.push(jourBloc);
+            }
+
+            jourBloc.cours.push(nouveauCours);
+
+            localStorage.setItem('schola.horaires', JSON.stringify(horaires));
 
             alert('Créneau enregistré avec succès!');
             this.resetForm();
@@ -89,7 +111,13 @@ export default {
 
             this.enseignantAuto = prof ? `${prof.prenom} ${prof.nom}` : '';
             this.enseignant = this.enseignantAuto;
+        },
+        addOneHour(timeStr) {
+            const [h, m] = timeStr.split(':').map(Number);
+            const newH = (h + 1) % 24;
+            return `${String(newH).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
         }
+
     }
 };
 </script>

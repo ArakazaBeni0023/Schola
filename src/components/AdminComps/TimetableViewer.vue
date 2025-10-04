@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: 'AdminEmploiDuTemps',
+    name: 'TimetableViewer',
     data() {
         return {
             facultes: [],
@@ -28,23 +28,26 @@ export default {
             this.grille = {};
         },
         afficherEmploiDuTemps() {
-            const fac = this.facultes.find(f => f.id === this.faculteId);
-            const coursIds = fac.courses
-                .filter(c => c.anneeEtude === parseInt(this.anneeEtude))
-                .map(c => c.id);
+            const fac = this.horaires.find(f => f.faculteId === this.faculteId);
+            if (!fac || !fac.horaires) {
+                this.grille = {};
+                return;
+            }
 
             const grilleTemp = {};
             this.heures.forEach(h => {
                 grilleTemp[h] = {};
-                this.jours.forEach(j => {
-                    const match = this.horaires.find(hr =>
-                        hr.faculteId === this.faculteId &&
-                        coursIds.includes(hr.coursId) &&
-                        hr.jour === j &&
-                        hr.heureDebut + '–' + hr.heureFin === h
+                this.jours.forEach(jour => {
+                    const jourBloc = fac.horaires.find(hb => hb.jour === jour);
+                    if (!jourBloc || !jourBloc.cours) return;
+
+                    const match = jourBloc.cours.find(c =>
+                        c.anneeEtude === parseInt(this.anneeEtude) &&
+                        `${c.heureDebut}–${c.heureFin}` === h
                     );
+
                     if (match) {
-                        grilleTemp[h][j] = {
+                        grilleTemp[h][jour] = {
                             nomCours: match.nomCours,
                             enseignant: match.enseignant || '—',
                             salle: match.salle || '—'
@@ -52,8 +55,8 @@ export default {
                     }
                 });
             });
+
             this.grille = grilleTemp;
-            console.log(this.grille)
         }
     }
 };
@@ -83,7 +86,10 @@ export default {
                 Afficher l'emploi du temps
             </button>
         </div>
-        <!-- v-if="grille.length" -->
+        <!-- <div v-if="Object.keys(grille).length === 0">
+            <p>Aucun cours trouvé pour cette faculté et cette année.</p>
+        </div> -->
+
         <table class="table-container">
             <thead>
                 <tr>

@@ -12,7 +12,7 @@ export default {
                 date: new Date().toISOString(),
                 type: "",
                 lien: "",
-                cible: ["tous"],
+                cible: "tous",
                 lu: false
             },
         }
@@ -22,6 +22,32 @@ export default {
             this.$emit('close');
             this.cible = "Tous";
             this.type = "Urgence";
+        },
+        sendNotif() {
+            if (!this.newNotif.titre || !this.newNotif.contenue) {
+                alert("Veuillez remplir le titre et le message.");
+                return;
+            }
+
+            this.newNotif.date = new Date().toISOString();
+            this.newNotif.type = this.type.toLowerCase();
+            this.newNotif.cible = this.cible.toLowerCase();
+            this.newNotif.lu = false;
+
+            this.$emit('add', { ...this.newNotif });
+
+            this.newNotif = {
+                titre: "",
+                contenue: "",
+                date: new Date().toISOString(),
+                type: "",
+                lien: "",
+                cible: "tous",
+                lu: false
+            };
+            this.cible = "Tous";
+            this.type = "Urgence";
+            this.$emit('close');
         }
     }
 }
@@ -52,12 +78,12 @@ export default {
                     </select>
                     <i class="bi-chevron-down"></i>
                 </div>
-                <input type="text" placeholder="Objet">
-                <textarea name="" id="" placeholder="Votre message..."></textarea>
+                <input type="text" placeholder="Objet" v-model="newNotif.titre">
+                <textarea v-model="newNotif.contenue" placeholder="Votre message..."></textarea>
             </div>
             <div class="btns-group">
-                <button class="add-btn">Envoyer <i class="bi-send"></i></button>
-                <button class="bi-link" title="Joint"></button>
+                <button class="add-btn" @click="sendNotif">Envoyer <i class="bi-send"></i></button>
+                <button aria-hidden=" true" data-icon="&#xe02d;"></button>
             </div>
         </div>
     </div>
@@ -179,11 +205,11 @@ export default {
 .btns-group {
     margin-top: 0;
     padding: 0;
-    justify-content: start;
+    justify-content: end;
     align-items: center;
     font-size: 12px;
-    justify-self: flex-end;
     height: fit-content;
+    flex-direction: row-reverse;
 }
 
 .btns-group button {
@@ -211,6 +237,12 @@ export default {
     .controls-btns .bi-dash,
     .controls-btns .bi-x {
         display: none;
+    }
+}
+
+@media (max-width:468px) {
+    .btns-group {
+        padding-bottom: 1rem;
     }
 }
 </style>

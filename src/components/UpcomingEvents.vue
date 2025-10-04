@@ -1,73 +1,120 @@
 <script>
 export default {
-    name: 'ScheduleComponent',
+    name: 'UpcomingEvents',
+    props: {
+        isProfesseur: {
+            type: Boolean,
+            default: false
+        },
+        userEmail: {
+            type: String,
+            required: true
+        }
+    },
     data() {
         return {
-            events: [
-                {
-                    subject: 'Biologie',
-                    time: '9:00 am',
-                    interval: '2h',
-                },
-                {
-                    subject: 'Chimie',
-                    time: '11:00 am',
-                    interval: '1h',
-                },
-                {
-                    subject: 'Physique',
-                    time: '1:00 pm',
-                    interval: '2h',
-                }
-            ],
-            attributes: [
-                {
-                    highlight: true,
-                    dates: new Date(),
-                },
-            ],
+            events: [],
+            today: new Date(),
         };
     },
     computed: {
         formattedDate() {
-            const date = this.attributes[0].dates;
-            return this.formatDate(date);
+            return this.formatDate(this.today);
         },
+        todayName() {
+            return this.today.toLocaleDateString('fr-FR', { weekday: 'long' });
+        },
+        filteredEvents() {
+            const now = this.today;
+            return this.events
+                .filter(event => event.jour.toLowerCase() === this.todayName.toLowerCase())
+                .filter(event => {
+                    const end = this.parseTime(event.heureFin);
+                    return now < end;
+                })
+                .map(event => {
+                    const start = this.parseTime(event.heureDebut);
+                    const timeDiff = Math.floor((start - now) / 60000);
+                    return {
+                        ...event,
+                        timeUntil: timeDiff > 0 ? `${timeDiff} min` : 'En cours',
+                    };
+                });
+        }
     },
     methods: {
         formatDate(date) {
-            const mois = [
-                'Janv', 'Févr', 'Mars', 'Avril', 'Mai', 'Juin',
-                'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'
-            ];
+            const mois = ['Janv', 'Févr', 'Mars', 'Avril', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
             const jour = String(date.getDate()).padStart(2, '0');
             const moisTexte = mois[date.getMonth()];
             return `${jour} ${moisTexte}`;
         },
+        parseTime(timeStr) {
+            const [h, m] = timeStr.split(':').map(Number);
+            const date = new Date(this.today);
+            date.setHours(h, m, 0, 0);
+            return date;
+        },
+        loadEvents() {
+            const horaires = JSON.parse(localStorage.getItem('schola.horaires')) || [];
+            const users = JSON.parse(localStorage.getItem('schola.users')) || [];
+            const user = users.find(u => u.email === this.userEmail);
+
+            if (!user) return;
+
+            let filtered = [];
+
+            if (user.role === 'etudiant') {
+                filtered = horaires
+                    .filter(h => h.faculteId && h.nomFaculte === user.faculte)
+                    .flatMap(fac => fac.horaires)
+                    .filter(h => h.jour === this.todayName)
+                    .flatMap(h => h.cours)
+                    .filter(c => c.anneeEtude === user.annee);
+            }
+
+            if (user.role === 'professeur') {
+                filtered = horaires
+                    .flatMap(fac => fac.horaires)
+                    .filter(h => h.jour === this.todayName)
+                    .flatMap(h => h.cours)
+                    .filter(c => c.enseignant === `${user.prenom} ${user.nom}`);
+            }
+
+            this.events = filtered;
+        }
     },
+    mounted() {
+        this.loadEvents();
+    }
 };
 </script>
 
 <template>
     <div class="schedule">
-        <h3 class="title">Événements à venir</h3>
+        <h3 class="title">Cours du {{ formattedDate }} ({{ todayName }})</h3>
         <div class="schedule-header">
-            <h4>{{ formattedDate }}</h4>
             <hr>
-            <div class="bi-three-dots-vertical"></div>
+            <!-- <div class="bi-three-dots-vertical"></div> -->
         </div>
+
         <div class="schedule-body">
-            <div v-for="(event, index) in events" :key="index" class="event">
+            <div v-if="filteredEvents.length === 0" class="no-events">
+                <p>Aucun cours prévu aujourd’hui.</p>
+            </div>
+
+            <div v-else v-for="(event, index) in filteredEvents" :key="index" class="event">
                 <div class="time">
-                    <h5> {{ event.time }}</h5>
+                    <h5>{{ event.heureDebut }} - {{ event.heureFin }}</h5>
                 </div>
-                <span class="saparator"></span>
+                <span class="separator"></span>
                 <div class="desc">
-                    <h5>{{ event.subject }}</h5>
-                    <p>{{ event.description }}</p>
+                    <h5>{{ event.nomCours }}</h5>
+                    <p>Salle: {{ event.salle }}</p>
+                    <p v-if="!isProfesseur">Prof: {{ event.enseignant }}</p>
                 </div>
                 <div class="interval">
-                    <h5> {{ event.interval }}</h5>
+                    <h5>{{ event.timeUntil }}</h5>
                 </div>
             </div>
         </div>
@@ -91,7 +138,7 @@ export default {
 }
 
 .schedule-body {
-    gap: 1rem;
+    gap: .2rem;
 }
 
 .schedule-body .event {
@@ -101,8 +148,8 @@ export default {
 
 .saparator {
     border-radius: 50px;
-    width: 10px;
-    height: 70%;
+    width: 8px;
+    height: 50%;
     background: var(--color-primary-dark);
 }
 

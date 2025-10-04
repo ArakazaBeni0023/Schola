@@ -45,7 +45,7 @@ export default {
 
             <!----------------------- displaying for mobile only -->
             <VCalendar class="calendrier" :attributes="attributes" />
-            <UpcomingEvents  class="UpCommingEvents"/>
+            <UpcomingEvents class="UpCommingEvents" />
 
         </div>
         <div class="right-side">

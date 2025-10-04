@@ -35,12 +35,12 @@ export default {
                     iconFill: 'bi-bell-fill',
                     title: 'Annonces'
                 },
-                {
+                /* {
                     link: '/settings',
                     icon: 'bi-gear',
                     iconFill: 'bi-gear-fill',
                     title: 'Paramètres'
-                },
+                }, */
             ],
             currentUser: null
         }
