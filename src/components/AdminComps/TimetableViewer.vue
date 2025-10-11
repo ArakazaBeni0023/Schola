@@ -9,8 +9,8 @@ export default {
             anneeEtude: '',
             horaires: [],
             grille: {},
-            jours: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'],
-            heures: ['08:00–10:00', '10:00–12:00', '14:00–16:00', '16:00–18:00']
+            jours: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+            heures: ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00']
         };
     },
     mounted() {
@@ -41,17 +41,18 @@ export default {
                     const jourBloc = fac.horaires.find(hb => hb.jour === jour);
                     if (!jourBloc || !jourBloc.cours) return;
 
-                    const match = jourBloc.cours.find(c =>
+                    const coursFiltres = jourBloc.cours.filter(c =>
                         c.anneeEtude === parseInt(this.anneeEtude) &&
-                        `${c.heureDebut}–${c.heureFin}` === h
+                        c.heureDebut === h
                     );
 
-                    if (match) {
-                        grilleTemp[h][jour] = {
-                            nomCours: match.nomCours,
-                            enseignant: match.enseignant || '—',
-                            salle: match.salle || '—'
-                        };
+                    if (coursFiltres.length > 0) {
+                        grilleTemp[h][jour] = coursFiltres.map(c => ({
+                            nomCours: c.nomCours,
+                            enseignant: c.enseignant || '—',
+                            salle: c.salle || '—',
+                            heureFin: c.heureFin
+                        }));
                     }
                 });
             });
@@ -86,14 +87,11 @@ export default {
                 Afficher l'emploi du temps
             </button>
         </div>
-        <!-- <div v-if="Object.keys(grille).length === 0">
-            <p>Aucun cours trouvé pour cette faculté et cette année.</p>
-        </div> -->
 
         <table class="table-container">
             <thead>
                 <tr>
-                    <th>Heure</th>
+                    <th><i class="bi-clock"></i></th>
                     <th v-for="jour in jours" :key="jour">{{ jour }}</th>
                 </tr>
             </thead>
@@ -102,13 +100,15 @@ export default {
                     <td>{{ heure }}</td>
                     <td v-for="jour in jours" :key="jour">
                         <div v-if="grille[heure] && grille[heure][jour]">
-                            <strong :title="'' + grille[heure][jour].enseignant + ' - ' + grille[heure][jour].salle">
-                                {{ grille[heure][jour].nomCours }}
-                            </strong> <br />
-                            <span class="infos">
-                                {{ grille[heure][jour].enseignant }}
-                                {{ grille[heure][jour].salle }}
-                            </span>
+                            <div v-for="(cours, index) in grille[heure][jour]" :key="index">
+                                <strong :title="cours.enseignant + ' - ' + cours.salle">
+                                    {{ cours.nomCours }}
+                                </strong><br />
+                                <span class="infos">
+                                    {{ cours.enseignant }} — {{ cours.salle }} (jusqu'à {{ cours.heureFin }})
+                                </span>
+                                <hr v-if="index < grille[heure][jour].length - 1" />
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -144,7 +144,8 @@ export default {
 }
 
 .table-container {
-    margin-top: 2rem;
+    margin-top: 1.5rem;
+    border-collapse: collapse;
 }
 
 

@@ -196,7 +196,7 @@ span {
 
 .grp-btns button {
     all: unset;
-    width: fill;
+    width: stretch;
     padding: .5rem 1rem;
     border-radius: 50px;
     font-size: 12px;

@@ -57,11 +57,13 @@ export default {
 
             <NotesEditor v-if="selectedCourse" :course="selectedCourse" :currentUser="currentUser"
                 @notify="addNotification" />
+
+            <UpcomingEvents class="UpCommingEvents" :userEmail="currentUser?.email" :isProfesseur="true" />
         </div>
 
         <div class="right-side">
             <VCalendar class="calendrier" :attributes="attributes" />
-            <UpcomingEvents class="UpCommingEvents" />
+            <UpcomingEvents class="UpCommingEvents" :userEmail="currentUser?.email" :isProfesseur="true" />
             <NotesCmp class="NotesCmp" />
         </div>
     </div>

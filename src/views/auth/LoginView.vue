@@ -22,6 +22,7 @@ export default {
                     nom: user.nom,
                     prenom: user.prenom,
                     role: user.role,
+                    email: user.email,
                 };
                 userInfos.role
                 if (this.rememberMe) {

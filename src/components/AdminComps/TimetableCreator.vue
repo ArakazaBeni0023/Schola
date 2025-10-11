@@ -15,9 +15,8 @@ export default {
             heure: '',
             enseignant: '',
             salle: '',
-            jours: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'],
-            heures: ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'],
-
+            jours: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+            heures: ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00'],
         };
     },
     computed: {
@@ -26,12 +25,17 @@ export default {
         }
     },
     mounted() {
+        const today = new Date();
+        const isSunday = today.getDay() === 0;
+        if (isSunday) {
+            localStorage.removeItem('schola.horaires');
+        }
+
         const facData = localStorage.getItem('schola.facultes');
         if (facData) this.facultes = JSON.parse(facData);
 
         const usersData = localStorage.getItem('schola.users');
         if (usersData) this.users = JSON.parse(usersData);
-
     },
     methods: {
         chargerAnneesEtCours() {
@@ -43,15 +47,12 @@ export default {
         },
         enregistrerHoraire() {
             const cours = this.coursDisponibles.find(c => c.id === this.coursId);
-            const [heureDebut, heureFin] = this.heure.includes('–')
-                ? this.heure.split('–')
-                : [this.heure, this.addOneHour(this.heure)];
+            const heureDebut = this.heure;
 
             const nouveauCours = {
                 coursId: this.coursId,
                 nomCours: cours.nom,
                 heureDebut,
-                heureFin,
                 enseignant: this.enseignant,
                 salle: this.salle,
                 anneeEtude: parseInt(this.anneeEtude)
@@ -111,13 +112,7 @@ export default {
 
             this.enseignantAuto = prof ? `${prof.prenom} ${prof.nom}` : '';
             this.enseignant = this.enseignantAuto;
-        },
-        addOneHour(timeStr) {
-            const [h, m] = timeStr.split(':').map(Number);
-            const newH = (h + 1) % 24;
-            return `${String(newH).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
         }
-
     }
 };
 </script>
@@ -130,6 +125,7 @@ export default {
             <label>Faculté:</label>
             <select v-model="faculteId" @change="chargerAnneesEtCours" class="select-input">
                 <option value="">-- Sélectionner --</option>
+
                 <option v-for="fac in facultes" :key="fac.id" :value="fac.id">{{ fac.nom }}</option>
             </select>
         </div>

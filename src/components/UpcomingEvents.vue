@@ -27,11 +27,7 @@ export default {
         filteredEvents() {
             const now = this.today;
             return this.events
-                .filter(event => event.jour.toLowerCase() === this.todayName.toLowerCase())
-                .filter(event => {
-                    const end = this.parseTime(event.heureFin);
-                    return now < end;
-                })
+                .filter(event => event.jour && event.jour.toLowerCase() === this.todayName.toLowerCase())
                 .map(event => {
                     const start = this.parseTime(event.heureDebut);
                     const timeDiff = Math.floor((start - now) / 60000);
@@ -56,7 +52,7 @@ export default {
             return date;
         },
         loadEvents() {
-            const horaires = JSON.parse(localStorage.getItem('schola.horaires')) || [];
+            const horairesData = JSON.parse(localStorage.getItem('schola.horaires')) || [];
             const users = JSON.parse(localStorage.getItem('schola.users')) || [];
             const user = users.find(u => u.email === this.userEmail);
 
@@ -64,22 +60,30 @@ export default {
 
             let filtered = [];
 
-            if (user.role === 'etudiant') {
-                filtered = horaires
-                    .filter(h => h.faculteId && h.nomFaculte === user.faculte)
-                    .flatMap(fac => fac.horaires)
-                    .filter(h => h.jour === this.todayName)
-                    .flatMap(h => h.cours)
-                    .filter(c => c.anneeEtude === user.annee);
-            }
-
-            if (user.role === 'professeur') {
-                filtered = horaires
-                    .flatMap(fac => fac.horaires)
-                    .filter(h => h.jour === this.todayName)
-                    .flatMap(h => h.cours)
-                    .filter(c => c.enseignant === `${user.prenom} ${user.nom}`);
-            }
+            horairesData.forEach(faculte => {
+                faculte.horaires
+                    .filter(h => h.jour.toLowerCase() === this.todayName.toLowerCase())
+                    .forEach(horaire => {
+                        horaire.cours.forEach(cours => {
+                            if (user.role === 'etudiant') {
+                                if (faculte.nomFaculte === user.faculte && cours.anneeEtude === user.annee) {
+                                    filtered.push({
+                                        ...cours,
+                                        jour: horaire.jour
+                                    });
+                                }
+                            } else if (user.role === 'professeur') {
+                                const fullName = `${user.prenom} ${user.nom}`;
+                                if (cours.enseignant === fullName) {
+                                    filtered.push({
+                                        ...cours,
+                                        jour: horaire.jour
+                                    });
+                                }
+                            }
+                        });
+                    });
+            });
 
             this.events = filtered;
         }
@@ -94,8 +98,7 @@ export default {
     <div class="schedule">
         <h3 class="title">Cours du {{ formattedDate }} ({{ todayName }})</h3>
         <div class="schedule-header">
-            <hr>
-            <!-- <div class="bi-three-dots-vertical"></div> -->
+            <hr />
         </div>
 
         <div class="schedule-body">
@@ -105,7 +108,7 @@ export default {
 
             <div v-else v-for="(event, index) in filteredEvents" :key="index" class="event">
                 <div class="time">
-                    <h5>{{ event.heureDebut }} - {{ event.heureFin }}</h5>
+                    <h5>{{ event.heureDebut }}</h5>
                 </div>
                 <span class="separator"></span>
                 <div class="desc">
@@ -120,6 +123,7 @@ export default {
         </div>
     </div>
 </template>
+
 
 <style scoped>
 .schedule {

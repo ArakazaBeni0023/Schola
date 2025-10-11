@@ -16,6 +16,7 @@ export default {
     },
     data() {
         return {
+            currentUser: null,
             attributes: [
                 {
                     highlight: true,
@@ -24,6 +25,17 @@ export default {
             ],
         };
     },
+    created() {
+        const savedUser = localStorage.getItem('schola.currentUser');
+        const savedUsers = localStorage.getItem('schola.users');
+
+        if (savedUser && savedUsers) {
+            const minimalUser = JSON.parse(savedUser);
+            const allUsers = JSON.parse(savedUsers);
+            this.currentUser = allUsers.find(u => u.id === minimalUser.id && u.role === 'etudiant');
+        }
+    }
+
 }
 </script>
 
@@ -42,15 +54,14 @@ export default {
 
             <!-- Grades -->
             <GradesCmp />
-
             <!----------------------- displaying for mobile only -->
             <VCalendar class="calendrier" :attributes="attributes" />
-            <UpcomingEvents class="UpCommingEvents" />
-
+            <UpcomingEvents class="UpCommingEvents" :userEmail="currentUser?.email" :isProfesseur="true" />
         </div>
         <div class="right-side">
             <VCalendar class="calendrier" :attributes="attributes" />
-            <UpcomingEvents class="UpCommingEvents" />
+            <UpcomingEvents class="UpCommingEvents" :userEmail="currentUser?.email" :isProfesseur="false" />
+
         </div>
     </div>
 </template>
