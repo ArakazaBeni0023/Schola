@@ -3,7 +3,6 @@ export default {
     name: 'StudentRegistrationView',
     data() {
         return {
-            // Données personnelles
             studentForm: {
                 nom: '',
                 prenom: '',
@@ -11,91 +10,91 @@ export default {
                 dateNaissance: '',
                 sexe: '',
                 telephone: '',
-                motDePasse: ''
+                motDePasse: '',
+                motDePasseConfirmation: ''
             },
-
-            // Données académiques
-            facultes: [
-                { id: 1, nom: 'Sciences' },
-                { id: 2, nom: 'Lettres' }
-            ],
-            availableClasses: [],
+            facultes: [],
+            availableAnnees: [],
             availableCours: [],
             academicForm: {
-                faculte: '',
-                classe: '',
-                coursSelectionnes: []
+                faculteId: '',
+                anneeEtude: '',
             }
         };
     },
+    mounted() {
+        const facultesData = JSON.parse(localStorage.getItem('schola.facultes')) || [];
+        this.facultes = facultesData;
+    },
     methods: {
-        updateClasses() {
-            if (this.academicForm.faculte === 1) {
-                this.availableClasses = [
-                    { id: 101, nom: 'Licence 1' },
-                    { id: 102, nom: 'Licence 2' }
-                ];
-            } else if (this.academicForm.faculte === 2) {
-                this.availableClasses = [
-                    { id: 201, nom: 'Lettres Modernes' },
-                    { id: 202, nom: 'Lettres Classiques' }
-                ];
+        updateAnnees() {
+            const facId = parseInt(this.academicForm.faculteId);
+            const fac = this.facultes.find(f => f.id === facId);
+
+            if (fac && fac.duree) {
+                this.availableAnnees = Array.from({ length: fac.duree }, (_, i) => i + 1);
             } else {
-                this.availableClasses = [];
+                this.availableAnnees = [];
             }
-            this.academicForm.classe = '';
+
+            this.academicForm.anneeEtude = '';
             this.availableCours = [];
         },
         updateCours() {
-            if (this.academicForm.classe === 101) {
-                this.availableCours = [
-                    { id: 1, nom: 'Mathématiques' },
-                    { id: 2, nom: 'Physique' }
-                ];
-            } else if (this.academicForm.classe === 201) {
-                this.availableCours = [
-                    { id: 3, nom: 'Philosophie' },
-                    { id: 4, nom: 'Latin' }
-                ];
-            } else {
-                this.availableCours = [];
+            const fac = this.facultes.find(f => f.id === parseInt(this.academicForm.faculteId));
+            if (fac) {
+                this.availableCours = fac.courses.filter(c => c.anneeEtude === parseInt(this.academicForm.anneeEtude));
             }
             this.academicForm.coursSelectionnes = [];
         },
         submitStudentRegistration() {
-            const passwordPattern = /^(?=.[A-Z])(?=.\d).{8,}$/;
+            const users = JSON.parse(localStorage.getItem('schola.users')) || [];
+            const inscriptions = JSON.parse(localStorage.getItem('schola.inscriptions')) || [];
+
+            if (users.some(u => u.email === this.studentForm.email)) {
+                alert("Cet email est déjà utilisé.");
+                return;
+            }
+
+            const passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
             if (!passwordPattern.test(this.studentForm.motDePasse)) {
                 alert("Mot de passe invalide (min 8 caractères, 1 majuscule, 1 chiffre).");
                 return;
             }
 
-            if (!this.academicForm.faculte || !this.academicForm.classe || this.academicForm.coursSelectionnes.length === 0) {
+            if (this.studentForm.motDePasse !== this.studentForm.motDePasseConfirmation) {
+                alert("Les mots de passe ne correspondent pas.");
+                return;
+            }
+
+            if (!this.academicForm.faculteId || !this.academicForm.anneeEtude) {
                 alert("Veuillez compléter la section académique.");
                 return;
             }
 
+            const fac = this.facultes.find(f => f.id === parseInt(this.academicForm.faculteId));
+
             const fullRegistration = {
                 ...this.studentForm,
-                faculte: this.academicForm.faculte,
-                classe: this.academicForm.classe,
-                coursSelectionnes: this.academicForm.coursSelectionnes
+                faculte: fac.nom,
+                annee: this.academicForm.anneeEtude,
             };
 
-            const saved = JSON.parse(localStorage.getItem('studentRegistrations')) || [];
-            saved.push(fullRegistration);
-            localStorage.setItem('studentRegistrations', JSON.stringify(saved));
+            inscriptions.push(fullRegistration);
+            localStorage.setItem('schola.inscriptions', JSON.stringify(inscriptions));
 
-            alert("Inscription complète réussie!");
-
-
+            alert("Inscription réussie!");
+            this.resetForm();
+        },
+        resetForm() {
             this.studentForm = {
                 nom: '', prenom: '', email: '', dateNaissance: '',
-                sexe: '', telephone: '', motDePasse: ''
+                sexe: '', telephone: '', motDePasse: '', motDePasseConfirmation: ''
             };
             this.academicForm = {
-                faculte: '', classe: '', coursSelectionnes: []
+                faculteId: '', anneeEtude: '', coursSelectionnes: []
             };
-            this.availableClasses = [];
+            this.availableAnnees = [];
             this.availableCours = [];
         }
     }
@@ -144,6 +143,13 @@ export default {
                     <input v-model.trim="studentForm.motDePasse" type="password" required class="input"
                         placeholder="min 8 caractères, 1 majuscule, 1 chiffre" />
                 </div>
+
+                <div class="form-group">
+                    <label>Confirmer le mot de passe *</label>
+                    <input v-model.trim="studentForm.motDePasseConfirmation" type="password" required class="input"
+                        placeholder="Répétez le mot de passe" />
+                </div>
+
             </fieldset>
 
             <!-- Informations académiques -->
@@ -151,7 +157,7 @@ export default {
                 <legend>Informations académiques</legend>
                 <div class="form-group">
                     <label>Faculté *</label>
-                    <select v-model="academicForm.faculte" @change="updateClasses" required class="select-input">
+                    <select v-model="academicForm.faculteId" @change="updateAnnees" required class="select-input">
                         <option value="">Sélectionner une faculté</option>
                         <option v-for="faculte in facultes" :key="faculte.id" :value="faculte.id">
                             {{ faculte.nom }}
@@ -159,23 +165,21 @@ export default {
                     </select>
                 </div>
 
-                <div class="group">
-                    <label>Classe *</label>
-                    <select v-model="academicForm.classe" @change="updateCours" required class="select-input">
-                        <option value="">Sélectionner une classe</option>
-                        <option v-for="classe in availableClasses" :key="classe.id" :value="classe.id">
-                            {{ classe.nom }}
+                <div class="form-group">
+                    <label>Année d’étude *</label>
+                    <select v-model="academicForm.anneeEtude" @change="updateCours" required class="select-input">
+                        <option value="">Sélectionner une année</option>
+                        <option v-for="annee in availableAnnees" :key="annee" :value="annee">
+                            Année {{ annee }}
                         </option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Cours disponibles *</label>
+                    <label>Cours disponibles ({{ availableCours.length }})</label>
                     <div class="col">
-                        <div v-for="cours in availableCours" :key="cours.id" class="check-box-input">
-                            <input v-model="academicForm.coursSelectionnes" :value="cours.id" type="checkbox"
-                                class="" />
-                            <span>{{ cours.nom }}</span>
+                        <div v-for="cours in availableCours" :key="cours.id" class="cours-dispo">
+                            {{ cours.nom }}
                         </div>
                     </div>
                 </div>
@@ -246,11 +250,15 @@ export default {
     border: 1px solid var(--color-primary);
 }
 
-.checkbox {
+.col {
     display: flex;
-    align-items: center;
-    /* justify-content: start; */
-    border: 1px solid #000;
+    gap: .5rem;
+}
+
+.cours-dispo {
+    background: var(--hover-lw);
+    border-radius: 5px;
+    padding: 5px 10px;
 }
 
 .submit-btn {

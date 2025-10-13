@@ -47,10 +47,20 @@ export default {
     },
     mounted() {
         const userData = localStorage.getItem('schola.currentUser');
+        const allUsers = JSON.parse(localStorage.getItem('schola.users')) || [];
+
         if (userData) {
-            this.currentUser = JSON.parse(userData);
+            const basicUser = JSON.parse(userData);
+            const fullUser = allUsers.find(u => u.id === basicUser.id);
+
+            if (fullUser) {
+                this.currentUser = fullUser;
+            } else {
+                this.currentUser = basicUser;
+            }
         }
     }
+
 };
 </script>
 

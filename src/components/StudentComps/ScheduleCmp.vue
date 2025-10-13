@@ -175,13 +175,8 @@ export default {
                                 <div v-if="getCoursForSlot(jour, heure)" class="course-info">
                                     <div class="course-name">{{ getCoursForSlot(jour, heure).nomCours }}</div>
                                     <div class="course-details">
-                                        {{ getCoursForSlot(jour, heure).enseignant }}
-                                    </div>
-                                    <div class="course-details">
-                                        Salle: {{ getCoursForSlot(jour, heure).salle }}
-                                    </div>
-                                    <div class="course-time">
-                                        jusqu'à {{ getCoursForSlot(jour, heure).heureFin }}
+                                        <b>{{ getCoursForSlot(jour, heure).enseignant }} </b> |
+                                        <b>{{ getCoursForSlot(jour, heure).salle }}</b>
                                     </div>
                                 </div>
                                 <div v-else class="empty-slot">

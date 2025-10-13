@@ -61,7 +61,6 @@ export default {
         <div class="right-side">
             <VCalendar class="calendrier" :attributes="attributes" />
             <UpcomingEvents class="UpCommingEvents" :userEmail="currentUser?.email" :isProfesseur="false" />
-
         </div>
     </div>
 </template>
