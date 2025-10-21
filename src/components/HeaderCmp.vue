@@ -14,6 +14,7 @@ export default {
             this.currentUser = null;
             localStorage.removeItem('schola.currentUser');
             window.location.reload()
+            this.$router.push("/");
         },
     },
 

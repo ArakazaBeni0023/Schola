@@ -7,6 +7,7 @@ export default {
             note: '',
             errorTitre: false,
             errorNote: false,
+            currentUser: null,
         }
     },
     watch: {
@@ -18,22 +19,38 @@ export default {
         },
     },
     mounted() {
-        var Notes = localStorage.getItem("listeNotes");
-
-        if (Notes) {
-            this.listeNotes = JSON.parse(Notes);
-        }
-        else {
-            localStorage.setItem("listeNotes", JSON.stringify(this.listeNotes));
-        }
+        this.loadCurrentUser();
+        this.loadUserNotes();
     },
     methods: {
+        loadCurrentUser() {
+            const userData = localStorage.getItem('schola.currentUser');
+            if (userData) {
+                this.currentUser = JSON.parse(userData);
+            }
+        },
+
+        loadUserNotes() {
+            if (!this.currentUser) return;
+
+            const allUsers = localStorage.getItem('schola.users');
+            if (allUsers) {
+                const users = JSON.parse(allUsers);
+                const currentUserData = users.find(user => user.id === this.currentUser.id);
+
+                if (currentUserData && currentUserData.notes) {
+                    this.listeNotes = currentUserData.notes;
+                }
+            }
+        },
+
         checkInput() {
             if (this.note || this.titre) {
                 this.errorTitre = false;
                 this.errorNote = false;
             }
         },
+
         ajouterNotes() {
             if (this.titre === '') {
                 this.errorTitre = true
@@ -45,17 +62,38 @@ export default {
                 let obj = {
                     "avatar": this.titre[0].toUpperCase(),
                     "titre": this.titre.toLowerCase().split(' ').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
-                    "content": this.note
+                    "content": this.note,
+                    "dateCreation": new Date().toISOString()
                 }
+
                 this.listeNotes.push(obj);
-                localStorage.setItem("listeNotes", JSON.stringify(this.listeNotes));
+                this.saveUserNotes();
                 this.titre = '';
                 this.note = '';
-                window.location.reload();
-                //-------- close
+
+                this.$emit("addNote", obj);
                 this.close();
             }
         },
+
+        saveUserNotes() {
+            if (!this.currentUser) return;
+
+            const allUsers = localStorage.getItem('schola.users');
+            if (allUsers) {
+                const users = JSON.parse(allUsers);
+                const userIndex = users.findIndex(user => user.id === this.currentUser.id);
+
+                if (userIndex !== -1) {
+                    users[userIndex].notes = this.listeNotes;
+
+                    localStorage.setItem('schola.users', JSON.stringify(users));
+                    this.currentUser.notes = this.listeNotes;
+                    localStorage.setItem('schola.currentUser', JSON.stringify(this.currentUser));
+                }
+            }
+        },
+
         close() {
             this.$emit("close");
         },
@@ -73,10 +111,10 @@ export default {
             <div class="title">
                 <input type="text" :class="{ 'input_error': errorTitre }" placeholder="Titre" v-model.trim="titre">
             </div>
-            <p class="msg" v-if="this.errorTitre === true">Veillez ajouter le titre</p>
+            <p class="msg" v-if="this.errorTitre === true">Veuillez ajouter le titre</p>
             <textarea class="paper" :class="{ 'input_error': errorNote }" placeholder="Content"
                 v-model.trim="note"></textarea>
-            <p class="msg" v-if="this.errorNote === true">Veillez ajouter le contenu</p>
+            <p class="msg" v-if="this.errorNote === true">Veuillez ajouter le contenu</p>
         </div>
         <button class="adm-btn" @click="ajouterNotes">Ajouter</button>
     </div>

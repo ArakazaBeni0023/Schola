@@ -1,5 +1,6 @@
 <script>
 import HeaderCmp from './HeaderCmp.vue';
+import RegistrationsCmp from './AdminComps/RegistrationsCmp.vue';
 import UserManagement from './AdminComps/UserManagement.vue';
 import FacultyManagement from './AdminComps/FacultyManagement.vue';
 import CoursesManagement from './AdminComps/CoursesManagement.vue';
@@ -13,6 +14,7 @@ export default {
     name: 'AdministrationView',
     components: {
         HeaderCmp,
+        RegistrationsCmp,
         UserManagement,
         FacultyManagement,
         CoursesManagement,
@@ -42,6 +44,9 @@ export default {
             <HeaderCmp class="navbar-fixed" />
 
             <h2 class="main-title">Espace Administration</h2>
+
+            <!-- Registrations  -->
+            <RegistrationsCmp />
 
             <!-- User Management -->
             <UserManagement />

@@ -23,6 +23,7 @@ export default {
                     dates: new Date(),
                 },
             ],
+            hasUsedRegistrationForm: false
         };
     },
     created() {
@@ -33,6 +34,15 @@ export default {
             const minimalUser = JSON.parse(savedUser);
             const allUsers = JSON.parse(savedUsers);
             this.currentUser = allUsers.find(u => u.id === minimalUser.id && u.role === 'etudiant');
+        }
+
+        const registrationUsed = localStorage.getItem('schola.registrationUsed');
+        this.hasUsedRegistrationForm = registrationUsed === 'true';
+    },
+    methods: {
+        onRegistrationComplete() {
+            this.hasUsedRegistrationForm = true;
+            localStorage.setItem('schola.registrationUsed', 'true');
         }
     }
 
@@ -47,7 +57,7 @@ export default {
             <h2 class="main-title">Espace Étudiant</h2>
 
             <!-- Registration Form  -->
-            <RegistrationForm />
+            <RegistrationForm v-if="!hasUsedRegistrationForm" @registration-complete="onRegistrationComplete" />
 
             <!-- Schedule -->
             <ScheduleCmp />

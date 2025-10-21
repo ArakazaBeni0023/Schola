@@ -82,7 +82,7 @@ export default {
 
             inscriptions.push(fullRegistration);
             localStorage.setItem('schola.inscriptions', JSON.stringify(inscriptions));
-
+            this.$emit('registration-complete');
             alert("Inscription réussie!");
             this.resetForm();
         },
@@ -192,7 +192,6 @@ export default {
 
 <style scoped>
 .container-form {
-    /* max-width: 600px; */
     width: 100%;
     background-color: var(--color-surface);
     margin: auto;
@@ -278,3 +277,8 @@ export default {
     background-color: var(--color-primary);
 }
 </style>
+
+<!-- 
+
+
+-->

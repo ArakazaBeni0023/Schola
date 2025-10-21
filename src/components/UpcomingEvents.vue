@@ -110,11 +110,12 @@ export default {
                 <div class="time">
                     <h5>{{ event.heureDebut }}</h5>
                 </div>
-                <span class="separator"></span>
+                <div class="separator"></div>
                 <div class="desc">
                     <h5>{{ event.nomCours }}</h5>
-                    <p>Salle: {{ event.salle }}</p>
-                    <p v-if="!isProfesseur">Prof: {{ event.enseignant }}</p>
+                    <p>Salle: <b> {{ event.salle }}</b> |
+                        Prof: <b v-if="!isProfesseur">{{ event.enseignant }}</b>
+                    </p>
                 </div>
                 <div class="interval">
                     <h5>{{ event.timeUntil }}</h5>
@@ -123,7 +124,6 @@ export default {
         </div>
     </div>
 </template>
-
 
 <style scoped>
 .schedule {
@@ -150,7 +150,7 @@ export default {
     gap: .5rem;
 }
 
-.saparator {
+.separator {
     border-radius: 50px;
     width: 8px;
     height: 50%;
