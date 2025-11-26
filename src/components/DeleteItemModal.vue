@@ -1,7 +1,12 @@
 <script>
 import ModalCmp from './ModalCmp.vue';
 export default {
-    components: { ModalCmp }
+    components: { ModalCmp },
+    methods: {
+        close() {
+            this.$emit('closeUsrDltMdl');
+        }
+    }
 }
 </script>
 
@@ -13,7 +18,7 @@ export default {
                 définitivement cette élément.</p>
         </div>
         <div class="btn-grp">
-            <button class="btn" @click="$emit(clsModal)">Annuler</button>
+            <button class="btn" @click="close">Annuler</button>
             <button class="btn delete-btn" @click="$emit('deleteItem')">
                 Supprimer</button>
         </div>

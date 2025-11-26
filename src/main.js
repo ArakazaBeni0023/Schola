@@ -16,6 +16,7 @@ import '@/assets/css/common.css';
 import '@/assets/css/custom.css';
 import '@/assets/css/auth-form.css';
 import '@/assets/css/table.css';
+import '@/assets/css/responsivity.css';
 import '@/assets/css/modal_custom.css';
 import '@/assets/css/notes.css';
 import '@/assets/css/notebook.css';

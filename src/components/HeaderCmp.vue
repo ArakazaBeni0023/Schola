@@ -1,21 +1,26 @@
 <script>
+import LogoutModal from './LogoutModal.vue';
 export default {
+    components: { LogoutModal },
     data() {
         return {
             currentUser: null,
             currentUserNom: "",
             currentUserPrenom: "",
+            showLogout: false
         };
     },
 
     methods: {
         logout() {
-            if (!confirm("Voulez-vous vous déconnecter ?")) return;
             this.currentUser = null;
             localStorage.removeItem('schola.currentUser');
             window.location.reload()
             this.$router.push("/");
         },
+        clsModal() {
+            this.showLogout = false;
+        }
     },
 
     mounted() {
@@ -38,7 +43,8 @@ export default {
                     Schola
                 </h1>
             </div>
-            <button @click="logout()" class="logout-btn bi-box-arrow-right"></button>
+            <button @click="showLogout = true" class="logout-btn bi-box-arrow-right"></button>
+            <!-- <button class="bi-calendar"></button> -->
         </div>
         <div class="user-block">
             <span class="user-infos">
@@ -47,6 +53,7 @@ export default {
             </span>
         </div>
     </header>
+    <LogoutModal v-show="showLogout" @clsModal="clsModal" @logout="logout" />
 </template>
 
 <style scoped>
@@ -71,10 +78,21 @@ export default {
     background: var(--hover-lw);
     border-radius: 50px;
     display: none;
+    border: 1px solid var(--color-primary);
 }
 
 .header-main-container .user-block {
     align-items: center;
+}
+
+.header-main-container .brand-container .bi-calendar {
+    all: unset;
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    border-radius: 8px;
 }
 
 .header-main-container .user-block .user-infos {

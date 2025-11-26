@@ -69,8 +69,6 @@ export default {
 
 <template>
     <div class="admin-container">
-        <h3 class="title">Cours enregistrés ({{ filteredCourses.length }})</h3>
-
         <div class="filter-container">
             <select v-model="filter" class="select-input">
                 <option value="tous">Tous</option>
@@ -121,10 +119,6 @@ export default {
 
 <style scoped>
 .admin-container {
-    background: var(--color-surface);
-    padding: 1rem;
-    border-radius: 15px;
-    border: 2px solid var(--color-primary);
     gap: 1rem;
 }
 

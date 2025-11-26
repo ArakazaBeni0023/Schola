@@ -1,0 +1,86 @@
+/* Version Tableau (Desktop) */
+.desktop-view {
+    display: block;
+}
+
+/* Version Liste (Mobile) */
+.mobile-view {
+    display: none;
+    border-radius: 10px;
+}
+
+.user-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--hover-lw);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all .5s ease;
+    gap: .5rem;
+}
+
+.user-card:hover {
+    background: var(--color-background);
+}
+
+.user-card .user-main-infos {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    position: relative;
+    text-wrap: balance;
+}
+
+.user-card .user-main-infos p {
+    font-size: 12px;
+}
+
+.user-role {
+    background: var(--hover-lw);
+    border-radius: 50px;
+    padding: .2rem .5rem;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 12px;
+}
+
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+    font-style: italic;
+    background: var(--color-text-light);
+    border-radius: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .desktop-view {
+        display: none;
+    }
+
+    .mobile-view {
+        display: block;
+    }
+}
+
+@media (min-width: 769px) {
+    .desktop-view {
+        display: block;
+    }
+
+    .mobile-view {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-card {
+        gap: 1rem;
+    }
+}

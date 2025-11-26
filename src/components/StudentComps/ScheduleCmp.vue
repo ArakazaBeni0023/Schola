@@ -43,7 +43,7 @@ export default {
                 if (horairesStr) {
                     this.horairesData = JSON.parse(horairesStr);
                 } else {
-                    this.error = "Aucun horaire trouvé dans le localStorage";
+                    this.error = "Aucun horaire trouvé pour l'instant!";
                 }
 
             } catch (error) {
@@ -155,13 +155,16 @@ export default {
         </div>
 
         <div v-else-if="!horairesData.length" class="no-data">
-            <p>Aucune donnée d'horaire disponible dans le localStorage</p>
-            <button @click="refreshData" class="retry-btn">Actualiser</button>
+            <p>Aucune donnée d'horaire disponible pour l'instant</p>
+            <!-- <button @click="refreshData" class="btn retry-btn">Actualiser</button> -->
         </div>
 
         <div v-else class="schedule-content">
             <div class="table-container">
-                <table class="schedule-table">
+                <div v-if="creneauxHoraires.length === 0" class="no-data">
+                    Aucune donnée
+                </div>
+                <table v-else class="schedule-table">
                     <thead>
                         <tr>
                             <th>Heure</th>
@@ -187,7 +190,30 @@ export default {
                     </tbody>
                 </table>
             </div>
-
         </div>
     </div>
 </template>
+
+<style scoped>
+.error-message {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.retry-btn {
+    all: unset;
+    width: fit-content;
+    padding: .5rem 1rem;
+    background: var(--color-primary);
+    color: var(--color-text-light);
+    border-radius: 50px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .5s ease;
+}
+
+.retry-btn:hover {
+    background: var(--color-primary-dark);
+}
+</style>

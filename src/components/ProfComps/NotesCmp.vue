@@ -127,7 +127,7 @@ export default {
             this.isNotePopover = false;
             this.index = index;
         },
-        deleteNote() {
+        deleteItem() {
             this.listeNotes.splice(this.index, 1);
             this.saveUserNotes();
             this.$emit("close");
@@ -194,5 +194,5 @@ export default {
             @updateNote="updateNote" />
     </div>
     <!---------------------------------------------- modal -->
-    <NotesDeleteModal v-show="supprimerModal" @close="close" @deleteNote="deleteNote" />
+    <NotesDeleteModal v-show="supprimerModal" @close="close" @deleteItem="deleteItem" />
 </template>

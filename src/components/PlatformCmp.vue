@@ -63,7 +63,6 @@ export default {
         grid-column-start: 3;
         grid-row-start: 3;
         grid-row-end: 4;
-        /* padding: .5rem 1rem 1.5rem 1rem; */
         background: var(--color-primary-dark);
         z-index: 110;
         border-top: 1px solid var(--color-muted);
@@ -71,7 +70,10 @@ export default {
     }
 
     .platform-container-fluid .main-container {
-        overflow: auto;
+        /* height: calc(100vh - 80px); */
+        height: 100%;
+        border: 1px solid #000;
+        /* overflow: hidden; */
     }
 }
 </style>

@@ -97,8 +97,6 @@ export default {
 
 <template>
     <div class="course-management-container" v-show="facultes.length">
-        <h3 class="title">Gestion des cours</h3>
-
         <div class="courses-container">
             <div v-for="faculte in facultes" :key="faculte.id" class="course">
                 <div class="course-header">
@@ -147,10 +145,6 @@ export default {
 
 <style scoped>
 .course-management-container {
-    background: var(--color-surface);
-    padding: 1rem;
-    border-radius: 15px;
-    border: 2px solid var(--color-primary);
     gap: .5rem;
 }
 

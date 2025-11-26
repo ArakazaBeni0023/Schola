@@ -1,6 +1,8 @@
 <script>
 import { useRouter } from 'vue-router';
+import LogoutModal from './LogoutModal.vue';
 export default {
+
     setup() {
         const router = useRouter();
         var currentPath = router.currentRoute.value.path
@@ -8,6 +10,7 @@ export default {
     },
 
     name: 'NavBar',
+    components: { LogoutModal },
     data() {
         return {
             links: [
@@ -42,18 +45,22 @@ export default {
                     title: 'Paramètres'
                 }, */
             ],
-            currentUser: null
+            currentUser: null,
+            showLogout: false
         }
     },
 
     methods: {
         logout() {
-            if (!confirm("Voulez-vous vous déconnecter ?")) return;
             this.currentUser = null;
             localStorage.removeItem('schola.currentUser');
             window.location.reload()
             this.$router.push("/");
         },
+
+        clsModal() {
+            this.showLogout = false;
+        }
     },
 
     mounted() {
@@ -76,8 +83,10 @@ export default {
                 <i class="bi" :class="[currentPath === link.link ? link.iconFill : link.icon]"></i>
             </router-link>
         </div>
-        <button class="logout-btn bi-box-arrow-right" @click="logout()"></button>
+        <button class="logout-btn bi-box-arrow-right" @click="showLogout = true"></button>
     </div>
+
+    <LogoutModal v-show="showLogout" @clsModal="clsModal" @logout="logout" />
 </template>
 
 <style scoped>
@@ -231,8 +240,7 @@ export default {
         height: 100%;
         justify-content: space-between;
         flex-direction: unset;
-        padding-block: .8rem;
-        padding-inline: 1.5rem;
+        padding: 0rem;
     }
 
     .links .brand-logo {
@@ -243,7 +251,7 @@ export default {
         flex-direction: initial;
         width: 100%;
         justify-content: space-between;
-        padding: 0;
+        padding-inline: 1.5rem;
     }
 
     .links .router-links .link {

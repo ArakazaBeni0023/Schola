@@ -1,8 +1,10 @@
 <script>
 const STORAGE_KEY = 'schola.users';
-
+import DeleteItemModal from '../DeleteItemModal.vue';
+import UserInfosViewer from './UserInfosViewer.vue';
 export default {
     name: 'UserManagement',
+    components: { DeleteItemModal, UserInfosViewer },
     data() {
         return {
             showUserCreater: false,
@@ -23,7 +25,13 @@ export default {
             success: null,
             search: '',
             sortBy: 'nom',
-            sortDir: 'A-Z'
+            sortDir: 'A-Z',
+
+            userId: '',
+            isUserPopover: false,
+            supprimerModal: false,
+
+            voirInfosUtilisateurModal: false,
         }
     },
     created() {
@@ -152,13 +160,40 @@ export default {
             }
         },
         deleteUser(id) {
-            if (!confirm('Supprimer cet utilisateur ?')) return;
             this.users = this.users.filter(u => u.id !== id);
             this.saveUsers();
+            this.closeUsrDltMdl();
         },
         resetForm() {
             this.newUser = { nom: '', prenom: '', email: '', role: '' };
             this.error = null;
+        },
+        formatRole(role) {
+            return `${role === 'admin' ? 'Admin' : role === 'etudiant' ? 'Étudiant' : ' Professeur'
+                }`;
+        },
+        showPopover(index) {
+            if (this.isUserPopover === index) {
+                this.isUserPopover = null;
+            }
+            else {
+                this.isUserPopover = index;
+            }
+        },
+        closeUsrDltMdl() {
+            this.userId = '';
+            this.isUserPopover = false;
+            this.supprimerModal = false;
+            this.voirInfosUtilisateurModal = false;
+        },
+        spmModal(id) {
+            this.supprimerModal = true;
+            this.isUserPopover = false;
+            this.userId = id;
+        },
+        viewUserInfos(id) {
+            this.userId = id;
+            this.voirInfosUtilisateurModal = true;
         }
     }
 }
@@ -167,7 +202,6 @@ export default {
 <template>
     <div class="user-management-container">
         <div class="users-management" v-if="!showUserCreater">
-            <h3 class="title">Gestion des utilisateurs ({{ users.length }})</h3>
 
             <button @click="showUserCreater = true" class="create-user-btn">
                 <i class="bi-plus-lg"></i> Créer un utilisateur
@@ -193,34 +227,49 @@ export default {
             <p v-if="userCount === 0" class="empty-state">Aucun utilisateur pour l’instant.</p>
 
             <div v-else class="users-list-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>E-mail</th>
-                            <th>Rôle</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="u in filteredUsers" :key="u.id">
-                            <td>{{ u.nom }} {{ u.prenom }}</td>
-                            <td>{{ u.role }}</td>
-                            <td>{{ u.email }}</td>
-                            <td>{{ new Date(u.createdAt).toLocaleString() }}</td>
-                            <td>
-                                <button @click="deleteUser(u.id)" class="bi-trash"></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="desktop-view">
+                    <div v-if="filteredUsers.length === 0" class="no-data"> Aucune utilisateur trouvée.</div>
+                    <table v-else>
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>E-mail</th>
+                                <th>Rôle</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="u in filteredUsers" :key="u.id">
+                                <td>{{ u.nom }} {{ u.prenom }}</td>
+                                <td>{{ formatRole(u.role) }}</td>
+                                <td>{{ u.email }}</td>
+                                <td>
+                                    <button @click="deleteUser(u.id)" class="bi-trash"></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mobile-view">
+                    <div v-if="filteredUsers.length === 0" class="no-data"> Aucune utilisateur trouvée.</div>
+                    <div v-else class="user-card" v-for="(u, index) in filteredUsers" :key="u.id">
+                        <div class="user-main-infos" @click="viewUserInfos(u.id)">
+                            <h4>{{ u.nom + ' ' + u.prenom }}</h4>
+                            <p>{{ u.email }}</p>
+                            <span class="user-role">{{ formatRole(u.role) }}</span>
+                        </div>
+                        <div class="bi-three-dots-vertical" @click="showPopover(index)"></div>
+                        <div v-show="isUserPopover === index" class="popover-content">
+                            <!-- <div class="item" @click="editerNote(index)"><i class="bi bi-pencil"></i>Editer</div> -->
+                            <div class="item" @click="spmModal(u.id)"><i class="bi bi-trash3"></i>Supprimer</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- Create User  -->
         <div class="user-form-container" v-else>
             <form @submit.prevent="createUser" class="form" novalidate>
-                <h4 class="form-title">Créer un utilisateur</h4>
 
                 <div v-if="error" class="alert alert-error">{{ error }}</div>
                 <div v-if="success" class="alert alert-success">{{ success }}</div>
@@ -266,14 +315,13 @@ export default {
             </form>
         </div>
     </div>
+
+    <UserInfosViewer v-show="voirInfosUtilisateurModal" :userId="userId" @closeUsrDltMdl="closeUsrDltMdl" />
+    <DeleteItemModal v-show="supprimerModal" @closeUsrDltMdl="closeUsrDltMdl" @deleteItem="deleteUser(userId)" />
 </template>
 
 <style scoped>
 .users-management {
-    background: var(--color-surface);
-    border: 2px solid var(--color-primary);
-    border-radius: 15px;
-    padding: 1rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -289,6 +337,7 @@ export default {
     font-size: 14px;
     padding: 0.8rem;
     flex-grow: 1;
+
 }
 
 .users-management .search-filters-container .filters-container {
@@ -315,7 +364,6 @@ export default {
 
 .users-management .users-list-container {
     width: 100%;
-    border: 1px solid var(--color-accent);
 }
 
 .title {
@@ -344,12 +392,7 @@ export default {
 }
 
 .user-form-container .form {
-    background: var(--color-surface);
-    padding: 1rem;
-    border-radius: 15px;
-    border: 2px solid var(--color-primary);
     gap: 1rem;
-    box-shadow: var(--shadow);
 }
 
 .user-form-container .form .form-title {
@@ -384,26 +427,11 @@ export default {
 
 .btns-group {
     gap: 3rem;
+    /* border: 1px solid #000; */
 }
 
-.alert {
-    padding: .5rem;
-    font-size: 12px;
-    display: block;
-    margin: auto;
-    border-radius: 5px;
-}
-
-.alert-success {
-    background: var(--color-success-bg);
-    color: var(--color-success);
-    border: 1px solid var(--color-success);
-}
-
-.alert-error {
-    background: var(--color-danger-bg);
-    color: var(--color-danger);
-    border: 1px solid var(--color-danger);
+.popover-content {
+    right: 5%;
 }
 
 @media (max-width:768px) {

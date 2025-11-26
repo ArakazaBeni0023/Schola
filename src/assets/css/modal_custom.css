@@ -23,15 +23,15 @@
     border: 1px solid var(--color-primary);
     width: 30%;
     min-height: 200px;
-    border-radius: 30px;
+    border-radius: 15px;
     overflow: hidden;
-    padding: 2rem;
+    padding: 1.5rem;
     box-shadow: var(--shadow-4);
     animation: .3s modalmoveup linear forwards;
     gap: 1rem;
 }
 
-.modal-header{
+.modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -41,18 +41,23 @@
     gap: 1rem;
 }
 
-.dsc{
-    font-size: 12px;
+.modal-header h3 {
+    text-transform: uppercase;
+}
+
+.dsc {
+    font-size: 14px;
     color: var(--color-muted);
 }
 
-.btn-grp{
+.btn-grp {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
 }
 
-.btn-grp .btn{
+.btn-grp .btn {
+    background: none;
     padding: 0.8rem 2rem;
     border-radius: 50px;
     border: none;
@@ -60,22 +65,24 @@
     font-size: 12px;
     color: var(--color-primary);
     transition: background .3s ease;
+    border: 1px solid var(--color-primary);
 }
 
-.btn-grp .btn:hover{
+.btn-grp .btn:hover {
     background-color: var(--hover-lw);
 }
 
-.btn-grp .delete-btn{
+.btn-grp .delete-btn {
     background-color: var(--color-danger-bg);
     color: var(--color-danger);
     border: 1px solid var(--color-danger);
 }
 
-.btn-grp .delete-btn:hover{
+.btn-grp .delete-btn:hover {
     background-color: var(--color-danger);
     color: var(--color-text-light);
 }
+
 @keyframes modalmoveup {
     0% {
         opacity: .8;
@@ -90,6 +97,6 @@
 
 @media (max-width:768px) {
     .modal-content {
-        width: 80%;
+        width: 90%;
     }
 }

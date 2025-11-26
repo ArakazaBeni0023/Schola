@@ -4,8 +4,12 @@ export default {
         return {
             cibles: ['Tous', 'Étudiant', 'Professeur', 'Administration'],
             types: ['Administratif', 'Urgence', 'Pédagogique'],
+            annees: ['Toutes'],
+            facultes: ['Toutes'],
             cible: "Tous",
             type: "Urgence",
+            anneeCible: "Toutes",
+            faculteCible: "Toutes",
             newNotif: {
                 titre: "",
                 contenue: "",
@@ -13,17 +17,82 @@ export default {
                 type: "",
                 lien: "",
                 cible: "tous",
+                anneeCible: "toutes",
+                faculteCible: "toutes",
                 lu: false
             },
-            attachedFiles: []
+            attachedFiles: [],
+            facultesData: []
+        }
+    },
+    mounted() {
+        this.loadFacultesFromLocalStorage();
+    },
+    computed: {
+        showAnneeFilter() {
+            return this.cible === 'Étudiant' && this.faculteCible !== 'Toutes';
+        },
+        anneesDisponibles() {
+            if (this.faculteCible === 'Toutes') {
+                return ['Toutes'];
+            }
+
+            const faculte = this.facultesData.find(f => f.nom === this.faculteCible);
+            if (!faculte) return ['Toutes'];
+
+            const annees = ['Toutes'];
+            for (let i = 1; i <= faculte.duree; i++) {
+                annees.push(`${i}ère année`);
+            }
+            return annees;
+        }
+    },
+    watch: {
+        //  newFaculte
+        faculteCible() {
+            // Réinitialiser l'année sélectionnée quand la faculté change newFaculte
+            this.anneeCible = 'Toutes';
+
+            // Mettre à jour la liste des années disponibles
+            this.annees = this.anneesDisponibles;
+        },
+        cible(newCible) {
+            // Réinitialiser les filtres si on change de cible
+            if (newCible !== 'Étudiant') {
+                this.faculteCible = 'Toutes';
+                this.anneeCible = 'Toutes';
+            }
         }
     },
     methods: {
+        loadFacultesFromLocalStorage() {
+            try {
+                const storedFacultes = localStorage.getItem('schola.facultes');
+                if (storedFacultes) {
+                    this.facultesData = JSON.parse(storedFacultes);
+                    this.facultes = ['Toutes', ...this.facultesData.map(f => f.nom)];
+                } else {
+                    console.warn('Aucune donnée de facultés trouvée dans le localStorage');
+                    this.facultesData = [];
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des facultés:', error);
+                this.facultesData = [];
+            }
+        },
+
         close() {
             this.$emit('close');
+            this.resetFilters();
+        },
+
+        resetFilters() {
             this.cible = "Tous";
             this.type = "Urgence";
+            this.anneeCible = "Toutes";
+            this.faculteCible = "Toutes";
         },
+
         triggerFileInput() {
             this.$refs.fileInput.click();
         },
@@ -65,29 +134,39 @@ export default {
             this.newNotif.date = new Date().toISOString();
             this.newNotif.type = this.type.toLowerCase();
             this.newNotif.cible = this.cible.toLowerCase();
+            this.newNotif.anneeCible = this.anneeCible.toLowerCase();
+            this.newNotif.faculteCible = this.faculteCible.toLowerCase();
             this.newNotif.lu = false;
             this.newNotif.fichiers = [...this.attachedFiles];
 
             this.$emit('add', { ...this.newNotif });
+            this.resetForm();
+            this.$emit('close');
+        },
 
+        resetForm() {
             this.newNotif = {
                 titre: "",
                 contenue: "",
                 date: new Date().toISOString(),
                 type: "",
                 cible: "tous",
+                anneeCible: "toutes",
+                faculteCible: "toutes",
                 lu: false,
                 fichiers: []
             };
             this.attachedFiles = [];
-            this.cible = "Tous";
-            this.type = "Urgence";
-            this.$emit('close');
+            this.resetFilters();
         },
+
+        // Méthode pour formater le nom de l'année (1 → "1ère année", 2 → "2ème année", etc.)
+        getAnneeLabel(numero) {
+            if (numero === 1) return `${numero}ère année`;
+            return `${numero}ème année`;
+        }
     }
-
 }
-
 </script>
 
 <template>
@@ -97,36 +176,74 @@ export default {
             <h3 class="title">Nouvelle Annonce</h3>
             <div class="controls-btns">
                 <button class="bi-dash"></button>
-                <button class="bi-arrows-angle-expand"></button>
                 <button class="bi-x" @click="close()"></button>
             </div>
         </div>
         <div class="new-notif-container">
             <div class="inputs-group">
+                <!-- Cible principale -->
                 <div class="form-group">
+                    <!-- <label>Destinataire principal</label> -->
                     <select v-model="cible">
                         <option v-for="c in cibles" :key="c" :value="c">{{ c }}</option>
                     </select>
                     <i class="bi-chevron-down"></i>
                 </div>
+
+                <!-- Filtres avancés pour les étudiants -->
+                <div class="filters-group" v-if="cible === 'Étudiant'">
+                    <!-- Sélection de la faculté -->
+                    <div class="form-group">
+                        <!-- <label>Faculté</label> -->
+                        <select v-model="faculteCible">
+                            <option v-for="f in facultes" :key="f" :value="f">{{ f }}</option>
+                        </select>
+                        <i class="bi-chevron-down"></i>
+                    </div>
+
+                    <!-- Sélection de l'année (dynamique selon la faculté) -->
+                    <div class="form-group" v-if="showAnneeFilter">
+                        <!-- <label>Année d'étude</label> -->
+                        <select v-model="anneeCible">
+                            <option v-for="annee in anneesDisponibles" :key="annee" :value="annee">
+                                {{ annee }}
+                            </option>
+                        </select>
+                        <i class="bi-chevron-down"></i>
+                    </div>
+                </div>
+
+                <!-- Type d'annonce -->
                 <div class="form-group">
+                    <!-- <label>Type d'annonce</label> -->
                     <select v-model="type">
                         <option v-for="t in types" :key="t" :value="t">{{ t }}</option>
                     </select>
                     <i class="bi-chevron-down"></i>
                 </div>
-                <input type="text" placeholder="Objet" v-model="newNotif.titre">
-                <textarea v-model="newNotif.contenue" placeholder="Votre message..."></textarea>
+
+                <!-- Titre et contenu -->
+                <div class="form-group">
+                    <!-- <label>Objet de l'annonce</label> -->
+                    <input type="text" placeholder="Objet" v-model="newNotif.titre">
+                </div>
+
+                <div class="form-group">
+                    <!-- <label>Message</label> -->
+                    <textarea v-model="newNotif.contenue" placeholder="Votre message..."></textarea>
+                </div>
             </div>
 
+            <!-- Fichiers attachés -->
             <div class="attached-file" v-if="attachedFiles.length">
+                <h4>Fichiers attachés :</h4>
                 <div class="file" v-for="(file, index) in attachedFiles" :key="index">
                     {{ file.name }}
                     <i class="bi-x" @click="removeFile(index)"></i>
                 </div>
             </div>
 
-
+            <!-- Boutons d'action -->
             <div class="btns-group">
                 <button class="add-btn" @click="sendNotif">Envoyer <i class="bi-send"></i></button>
                 <button class="attach-file" @click="triggerFileInput">
@@ -134,7 +251,16 @@ export default {
                 </button>
                 <input type="file" ref="fileInput" multiple @change="handleFileUpload"
                     accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.txt" style="display: none" />
+            </div>
 
+            <!-- Information sur le ciblage -->
+            <div class="targeting-info" v-if="cible === 'Étudiant'">
+                <p><strong>Ciblage :</strong>
+                    {{ faculteCible !== 'Toutes' ? `${faculteCible}` : 'Toutes les facultés' }}
+                    <span v-if="anneeCible !== 'Toutes' && faculteCible !== 'Toutes'">
+                        - {{ anneeCible }}
+                    </span>
+                </p>
             </div>
         </div>
     </div>
@@ -243,6 +369,10 @@ export default {
     align-items: center;
 }
 
+.form-group input {
+    width: 100%;
+}
+
 /* attach file */
 .attached-file {
     display: flex;
@@ -292,6 +422,7 @@ export default {
     font-size: 12px;
     height: fit-content;
     flex-direction: row-reverse;
+    gap: 1rem;
 }
 
 .btns-group button {

@@ -1,12 +1,13 @@
 <script>
 import PlatformCmp from '@/components/PlatformCmp.vue';
 import NewNotif from "@/components/NewNotif.vue";
-
+import DeleteItemModal from "@/components/DeleteItemModal.vue"
 export default {
     name: 'NotificationsView',
     components: {
         PlatformCmp,
-        NewNotif
+        NewNotif,
+        DeleteItemModal
     },
 
     data() {
@@ -17,11 +18,14 @@ export default {
             notifTitre: '',
             notifDate: '',
             notifLien: '',
+            notifType: '',
             term: '',
             userRole: '',
             userId: '',
             isNotif: false,
-            users: []
+            users: [],
+            supprimerModal: false,
+            annonceIndex: ''
         }
     },
 
@@ -62,9 +66,16 @@ export default {
 
     computed: {
         userNotifications() {
+            if (this.userRole.toLowerCase() === 'admin') {
+                return this.sortedNotifications;
+            }
+
             const user = this.users.find(u => u.id === this.userId);
             if (!user || !user.annonces) return [];
-            return this.sortedNotifications.filter(n => user.annonces.includes(n.id));
+
+            return this.sortedNotifications.filter(notification =>
+                user.annonces.includes(notification.id)
+            );
         },
 
         filteredNotifications() {
@@ -94,6 +105,7 @@ export default {
             this.notifTitre = notif.titre;
             this.notifContenue = notif.contenue;
             this.notifDate = notif.date;
+            this.notifType = notif.type;
             this.focusNotif = true;
 
             this.notifications[notifIndex].lu = true;
@@ -108,8 +120,8 @@ export default {
             this.notifFichiers = notif.fichiers || [];
         },
 
-        deleteNotif(index) {
-            const notifId = this.filteredNotifications[index].id;
+        deleteNotif(annonceIndex) {
+            const notifId = this.filteredNotifications[annonceIndex].id;
             const userIndex = this.users.findIndex(u => u.id === this.userId);
             if (userIndex === -1) return;
 
@@ -120,6 +132,12 @@ export default {
                 this.users[userIndex].annonces = this.users[userIndex].annonces.filter(id => id !== notifId);
                 localStorage.setItem('schola.users', JSON.stringify(this.users));
             }
+            this.supprimerModal = false;
+        },
+
+        showDeleteModal(index) {
+            this.annonceIndex = index;
+            this.supprimerModal = true;
         },
 
         timeSince(date) {
@@ -173,18 +191,21 @@ export default {
             });
             localStorage.setItem('schola.users', JSON.stringify(this.users));
         },
+
         downloadFile(file) {
             const link = document.createElement('a');
             link.href = file.base64;
             link.download = file.name;
             link.click();
-        }
+        },
 
-
+        closeUsrDltMdl() {
+            this.annonceIndex = '';
+            this.supprimerModal = false;
+        },
     }
 }
 </script>
-
 
 <template>
     <PlatformCmp>
@@ -195,6 +216,10 @@ export default {
             </div>
 
             <div v-if="focusNotif" class="notifications-container">
+                <span class="top-badge"
+                    :class="{ 'top-adm-badge': notifType === 'administratif', 'top-urg-badge': notifType === 'urgence', 'top-ped-badge': notifType === 'pédagogique' }">
+                    {{ notifType }}
+                </span>
                 <div class="notif-viewer">
                     <div class="notif-viewer-header">
                         <button class="return-btn bi-arrow-left-short" @click="focusNotif = false"></button>
@@ -232,9 +257,9 @@ export default {
                     <h2>Annonces</h2>
                 </div>
                 <div class="notif-item" v-for="(n, index) in filteredNotifications" :key="index"
-                    @click="viewNotif(index)" :class="{ 'readed': n.lu, }">
+                    :class="{ 'readed': n.lu, }">
                     <span :class="`badge ${getTypeClass(n.type)}`"></span>
-                    <div class="infos">
+                    <div class="infos" @click="viewNotif(index)">
                         <div class="main-infos">
                             <h6 v-if="n.lu">{{ n.titre }}</h6>
                             <h5 v-else>{{ n.titre }}</h5>
@@ -246,7 +271,7 @@ export default {
                         </small>
 
                     </div>
-                    <button class="delete-btn bi-trash" @click.stop="deleteNotif(index)"></button>
+                    <button class="delete-btn bi-trash" @click="showDeleteModal(index)"></button>
                 </div>
                 <p class="muted-text" v-if="filteredNotifications.length === 0">
                     <i class="bi-box-open"></i> Aucune annonce pour l’instant.
@@ -254,11 +279,14 @@ export default {
             </div>
         </div>
     </PlatformCmp>
+
     <button class="add-btn new-notif-btn" v-if="isNotif === false && userRole === 'admin'" @click="showNotifMaker()">
         <i class="bi-pencil"></i>
         Nouvelle annonce
     </button>
+
     <NewNotif v-show="isNotif" class="new-notif" @close="showNotifMaker" @add="addNotification" />
+    <DeleteItemModal v-show="supprimerModal" @closeUsrDltMdl="closeUsrDltMdl" @deleteItem="deleteNotif(annonceIndex)" />
 </template>
 
 <style scoped>
@@ -290,11 +318,9 @@ export default {
     margin-bottom: 1rem;
 }
 
-
 .search-block input {
     all: unset;
     flex-grow: 1;
-
     font-size: 12px;
 }
 
@@ -303,11 +329,44 @@ export default {
     display: flex;
     flex-direction: column;
     /* gap: .5rem; */
+    position: relative;
     margin-top: 2rem;
     margin: auto;
     background: var(--color-surface);
     padding: 2rem 1rem;
     border-radius: 5px;
+    overflow: hidden;
+}
+
+.top-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    padding: .2rem .5rem;
+    text-align: center;
+    text-transform: capitalize;
+    font-size: 12px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.top-urg-badge {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+    border: 1px solid var(--color-danger);
+}
+
+.top-adm-badge {
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+    border: 1px solid var(--color-warning);
+}
+
+.top-ped-badge {
+    background: #146EB415;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
 }
 
 .notifications-container .notif-item {
@@ -344,6 +403,7 @@ export default {
     display: flex;
     align-items: center;
     padding-inline: 0.8rem;
+    transition: all 1s ease;
 }
 
 .notifications-container .notif-item:hover .delete-btn {
@@ -357,6 +417,7 @@ export default {
     color: var(--color-danger);
     padding: 4px 8px;
     border-radius: 5px;
+    transition: all .5s ease;
 }
 
 .notifications-container .notif-item .delete-btn:hover {
@@ -454,6 +515,10 @@ export default {
     gap: .5rem;
 }
 
+/* .badge {
+    padding: 1rem;
+} */
+
 .attached-docs .file {
     background: var(--hover-lw);
     border: 1px solid var(--color-primary);
@@ -505,7 +570,6 @@ export default {
     background-color: var(--color-primary);
 }
 
-
 /* preview */
 .preview-img {
     max-width: 100%;
@@ -516,8 +580,6 @@ export default {
 .file-preview {
     margin-bottom: 20px;
 }
-
-
 
 @media (max-width:768px) {
     .container-fluid {

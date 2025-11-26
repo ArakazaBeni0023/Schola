@@ -16,6 +16,10 @@
     width: 45%;
     background: var(--color-surface);
     gap: 1rem;
+    padding: 3rem 1rem;
+    border-radius: 15px;
+    border: 2px solid var(--color-primary);
+    box-shadow: var(--shadow-4);
 }
 
 .form-container .auth-form .logo {
@@ -64,8 +68,10 @@
 }
 
 .btns-group {
-    gap: 1rem;
+    display: flex;
     justify-content: space-between;
+    margin-top: 1rem;
+    /* width: 60%; */
 }
 
 .btns-group button {
@@ -78,7 +84,6 @@
     width: 100%;
     transition: text-decoration .5s ease, background .5s ease;
     cursor: pointer;
-    margin-top: 2rem;
 }
 
 .btns-group .submit-btn {
@@ -93,12 +98,16 @@
 .btns-group .cancel-btn {
     background: var(--hover-lw);
     color: var(--color-primary);
+    border: 1px solid var(--color-primary);
 }
 
 .btns-group .cancel-btn:hover {
     background: var(--color-accent);
 }
 
+.check-box-input {
+    gap: .5rem;
+}
 
 .check-box-input input[type="checkbox"] {
     appearance: none;
@@ -109,7 +118,7 @@
     border-radius: 4px;
     cursor: pointer;
     position: relative;
-    margin-right: .5rem;
+    /* margin-right: .5rem; */
 }
 
 .check-box-input input[type="checkbox"]:checked {
@@ -138,8 +147,35 @@
     transition: all .5s ease;
 }
 
-@media (max-width:768px) {
+@media (max-width: 768px) {
     .auth-form {
         width: 100%;
+    }
+
+    .btns-group .submit-btn {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-form {
+        padding: 1rem;
+    }
+
+    .form-container .auth-form .logo {
+        width: 80px;
+        height: 80px;
+    }
+
+    .form-title {
+        font-size: 24px;
+    }
+
+    .btns-group .submit-btn {
+        max-width: none;
+    }
+
+    .check-box-input {
+        gap: 1rem;
     }
 }

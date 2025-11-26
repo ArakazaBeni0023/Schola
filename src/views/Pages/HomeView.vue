@@ -12,11 +12,13 @@ export default {
         ProfView,
         StudentView
     },
+
     data() {
         return {
             currentUserRole: null
         };
     },
+
     created() {
         const savedUser = localStorage.getItem('schola.currentUser');
         if (savedUser) {

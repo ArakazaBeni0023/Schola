@@ -30,6 +30,7 @@ export default {
         saveFacultes() {
             localStorage.setItem('schola.facultes', JSON.stringify(this.facultes));
         },
+
         addFaculty() {
             if (this.newFacultyName.trim()) {
                 this.facultes.push({
@@ -43,16 +44,19 @@ export default {
                 this.saveFacultes();
             }
         },
+
         deleteFaculty(id) {
             if (!confirm("Supprimer cette faculté ?")) return;
             this.facultes = this.facultes.filter(f => f.id !== id);
             this.saveFacultes();
         },
+
         startEditing(faculty) {
             this.editingFacultyId = faculty.id;
             this.editedFacultyName = faculty.nom;
             this.editedFacultyDuration = faculty.duree;
         },
+
         confirmEdit() {
             const faculty = this.facultes.find(f => f.id === this.editingFacultyId);
             if (faculty && this.editedFacultyName.trim()) {
@@ -64,10 +68,12 @@ export default {
                 this.saveFacultes();
             }
         },
+
         cancelEdit() {
             this.editingFacultyId = null;
             this.editedFacultyName = '';
         },
+
         getStudentCountByYear(fac) {
             const counts = {};
             this.students.forEach(student => {
@@ -78,6 +84,7 @@ export default {
             });
             return counts;
         },
+
         formatAnnee(annee) {
             if (!annee) return '-';
             return `${annee}${annee === 1 ? ' ère' : ' ème'}`;
@@ -88,8 +95,6 @@ export default {
 
 <template>
     <div class="faculty-management-container">
-        <h3 class="title">Gestion des facultés ({{ facultes.length }})</h3>
-
         <div class="faculty-management-container-header">
             <input v-model.trim="newFacultyName" type="text" placeholder="Nom de la faculté" class="input">
             <input v-model.number="newFacultyDuration" type="number" min="1" placeholder="Durée (années)" class="input"
@@ -149,10 +154,6 @@ export default {
 
 <style scoped>
 .faculty-management-container {
-    background: var(--color-surface);
-    padding: 1rem;
-    border-radius: 15px;
-    border: 2px solid var(--color-primary);
     gap: .5rem;
 }
 

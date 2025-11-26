@@ -31,7 +31,6 @@ export default {
                     sessionStorage.setItem("schola.currentUser", JSON.stringify(userInfos));
                 }
 
-                alert("Login successful");
                 this.$emit("login-success");
             } else {
                 alert("Invalid email or password ");
@@ -69,20 +68,13 @@ export default {
             </div>
 
             <div class="btns-group">
-                <button type="submit" class="submit-btn">Se connecter</button>
+                <button type="submit" class="submit-btn">Se Connecter</button>
             </div>
         </form>
     </div>
 </template>
 
 <style scoped>
-.auth-form {
-    padding: 3rem 1rem;
-    border-radius: 15px;
-    border: 2px solid var(--color-primary);
-    box-shadow: var(--shadow-4);
-}
-
 .inline {
     display: flex;
     justify-content: space-between;

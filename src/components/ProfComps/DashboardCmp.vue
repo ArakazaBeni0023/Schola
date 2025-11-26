@@ -59,6 +59,10 @@ export default {
                     const sum = notes.reduce((a, b) => a + b, 0);
                     return (sum / notes.length).toFixed(1);
                 }, */
+        formatAnnee(annee) {
+            return `${annee} ${annee === 1 ? 'ère' : 'ème'}`;
+        },
+
     }
 };
 </script>
@@ -68,7 +72,7 @@ export default {
         <h3 class="title">Mes cours</h3>
         <div class="dashboard-container">
             <div v-for="cours in professorCoursesByYear" :key="cours.id" class="dashboard-item">
-                <h4>{{ cours.nom }} - {{ cours.faculte }} - {{ cours.annee }}ᵉ année</h4>
+                <h4>{{ cours.nom }} - {{ cours.faculte }} - {{ formatAnnee(cours.annee) }} année</h4>
                 <div class="cours-infos">
                     <div class="text-sm">
                         <i class="bi-people-fill"></i>
@@ -77,7 +81,7 @@ export default {
                     <div class="text-sm">
                         <i class="bi-pie-chart-fill"></i>
                         <!-- {{ getAverage(cours) }} -->
-                        <span>{{  }} points</span>
+                        <span>{{ }} points</span>
                     </div>
                 </div>
                 <button v-if="cours.etudiants_list.length" @click="handleSelect(cours)" class="btn">

@@ -16,13 +16,14 @@ input::placeholder {
     color: var(--color-secondary);
 }
 
-/* select,  */
-/* input[type='text'] */
-/* input[type='email'],
-input[type='password']{
-    all:unset;
-    border: none;
-} */
+
+select,
+input,
+input[type='text'],
+input[type='email'],
+input[type='password'] {
+    outline: none;
+}
 
 #app {
     -webkit-font-smoothing: antialiased;
@@ -43,6 +44,10 @@ body {
 
 table {
     border-collapse: collapse;
+}
+
+table td {
+    padding: .75rem;
 }
 
 .global-container {
@@ -120,7 +125,9 @@ table {
     }
 
     .global-container .left-side {
-        padding: 2rem 0rem;
+        padding: 2rem 0rem 5rem 0rem;
+        overflow: initial;
+        height: 100%;
     }
 
     .global-container .left-side .calendrier,
@@ -149,13 +156,13 @@ table {
 
 .calendrier {
     width: 100%;
-    background-color: var(--color-background);
+    background-color: var(--color-surface);
     color: var(--color-text);
     font-family: 'Poppins', sans-serif;
     border-radius: 15px;
     padding: .5rem;
     z-index: 1;
-    border: 1px solid var(--hover-lw);
+    border: 2px solid var(--hover-lw);
 }
 
 .checking-btns {
@@ -222,4 +229,53 @@ table {
 .crud-btns .cancel-btn:hover {
     color: var(--color-danger);
     background: var(--color-danger-bg);
+}
+
+
+/* Styles des alertes */
+.alert {
+    padding: .5rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    border: 1px solid transparent;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.alert-error {
+    background-color: var(--color-danger-bg);
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+}
+
+.alert-success {
+    background-color: var(--color-success-bg);
+    border-color: var(--color-success);
+    color: var(--color-success);
+}
+
+/* Animations */
+.alert-fade-enter-active,
+.alert-fade-leave-active {
+    transition: all 0.5s ease;
+}
+
+.alert-fade-enter-from {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.alert-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .alert {
+        font-size: 12px;
+    }
 }

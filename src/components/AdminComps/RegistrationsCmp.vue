@@ -133,7 +133,11 @@ export default {
             link.href = URL.createObjectURL(dataBlob);
             link.download = `inscriptions_etudiants_${new Date().toISOString().split('T')[0]}.json`;
             link.click();
-        }
+        },
+        formatAnnee(annee) {
+            if (!annee) return '-';
+            return `${annee}${annee === 1 ? 'ère' : 'ème'}`;
+        },
     }
 };
 </script>
@@ -141,7 +145,6 @@ export default {
 <template>
     <div class="admin-container">
         <div class="admin-header">
-            <h3 class="title">Gestion des inscriptions étudiantes</h3>
             <div class="stats-grid">
                 <div class="stat-item total">
                     <span class="stat-number">{{ inscriptions.length }}</span>
@@ -174,9 +177,9 @@ export default {
                     <option value="rejected">Rejetées</option>
                 </select>
             </div>
-            <button @click="exportData" class="export-btn">
+            <!-- <button @click="exportData" class="export-btn">
                 Exporter les données
-            </button>
+            </button> -->
         </div>
 
         <!-- Version Tableau pour PC -->
@@ -204,7 +207,7 @@ export default {
                         <td>{{ inscription.email }}</td>
                         <td>{{ inscription.telephone || '-' }}</td>
                         <td>{{ inscription.faculte }}</td>
-                        <td>Année {{ inscription.annee }}</td>
+                        <td> {{ formatAnnee(inscription.annee) }} année</td>
                         <td>
                             <span :class="getStatusBadgeClass(inscription.status)">
                                 {{ getStatusText(inscription.status) }}
@@ -214,11 +217,11 @@ export default {
                             <template v-if="inscription.status === 'pending'">
                                 <button @click="acceptRegistration(inscription)" class="btn-accept btn-small"
                                     title="Accepter l'inscription">
-                                    ✓
+                                    <i class="bi-check"></i>
                                 </button>
                                 <button @click="rejectRegistration(inscription)" class="btn-reject btn-small"
                                     title="Rejeter l'inscription">
-                                    ✕
+                                    <i class="bi-x"></i>
                                 </button>
                             </template>
                             <span v-else class="action-completed">
@@ -311,6 +314,10 @@ export default {
 .stat-item {
     text-align: center;
     padding: 15px;
+    /* border-top-left-radius: 0px;
+                        border-bottom-left-radius: 0px;
+                        border-top-right-radius: 6px;
+                        border-bottom-right-radius: 6px; */
     border-radius: 6px;
     background: var(--color-text-light);
 }
@@ -354,7 +361,7 @@ export default {
 
 .search-filter {
     display: flex;
-    gap: 30px;
+    gap: 1rem;
     flex: 1;
 }
 
@@ -362,7 +369,7 @@ export default {
 .status-filter {
     all: unset;
     font-size: 12px;
-    padding: .6rem;
+    padding: .8rem;
     background: var(--hover-lw);
     color: var(--color-primary);
     border-radius: 4px;
@@ -399,99 +406,41 @@ export default {
 
 .table-container {
     width: 100%;
-    background-color: var(--color-surface);
     margin: auto;
     gap: 1rem;
     color: var(--color-primary);
-    padding: 1rem;
-    border-radius: 10px;
-    border: 2px solid var(--color-primary);
 }
 
-/* Version Tableau (Desktop) */
-.desktop-view {
-    display: block;
-}
+/* Version Tableau (Desktop)  */
 
-.inscriptions-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--color-text-light);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.inscriptions-table th {
-    background: #f8f9fa;
-    padding: 15px 12px;
-    text-align: left;
-    font-weight: 600;
-    color: #2c3e50;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.inscriptions-table td {
-    padding: 15px 12px;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.inscriptions-table tr:last-child td {
-    border-bottom: none;
-}
-
-.inscriptions-table tr:hover {
-    background: #f8f9fa;
-}
-
-.student-info .student-name {
-    font-weight: 600;
-    color: #2c3e50;
-}
-
-.student-info .student-details {
-    font-size: 12px;
-    color: #6c757d;
-    margin-top: 4px;
-}
-
-.actions {
-    white-space: nowrap;
-}
-
-.btn-small {
-    padding: 6px 10px;
+.inscriptions-table .btn-small {
     border: none;
-    border-radius: 4px;
+    transition: all .5s ease;
     cursor: pointer;
     font-size: 12px;
     margin-right: 5px;
 }
 
 .btn-accept.btn-small {
-    background: var(--color-success);
-    color: var(--color-text-light);
+    background: var(--color-success-bg);
+    color: var(--color-success);
 }
 
 .btn-reject.btn-small {
-    background: #dc3545;
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+}
+
+.btn-small:hover {
     color: var(--color-text-light);
 }
 
 /* Version Liste (Mobile) */
-.mobile-view {
-    display: none;
-    border-radius: 10px;
-    border: 2px solid var(--color-primary);
-}
-
 .inscription-card {
-    background: var(--color-text-light);
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 20px;
+    padding: 1rem;
+    border-radius: 15px;
     margin-bottom: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--hover-lw);
 }
 
 .card-header {
@@ -572,7 +521,7 @@ export default {
 }
 
 .btn-accept {
-    background: #28a745;
+    background: var(--color-success);
     color: var(--color-text-light);
     border: none;
     padding: 10px 16px;
@@ -587,7 +536,7 @@ export default {
 }
 
 .btn-reject {
-    background: #dc3545;
+    background: var(--color-danger);
     color: var(--color-text-light);
     border: none;
     padding: 10px 16px;
@@ -602,31 +551,15 @@ export default {
 }
 
 .action-completed {
-    color: #6c757d;
+    color: var(--color-muted);
     font-style: italic;
     text-align: center;
     width: 100%;
 }
 
-.no-data {
-    text-align: center;
-    padding: 40px;
-    color: #6c757d;
-    font-style: italic;
-    background: var(--color-text-light);
-    border-radius: 8px;
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .desktop-view {
-        display: none;
-    }
-
-    .mobile-view {
-        display: block;
-    }
-
     .admin-controls {
         flex-direction: column;
         align-items: stretch;
@@ -653,16 +586,6 @@ export default {
 
     .info-value {
         text-align: left;
-    }
-}
-
-@media (min-width: 769px) {
-    .desktop-view {
-        display: block;
-    }
-
-    .mobile-view {
-        display: none;
     }
 }
 </style>
