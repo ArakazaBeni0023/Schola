@@ -46,7 +46,7 @@ export default {
             return this.editedStudent.faculte ? 'Modifier étudiant' : 'Affecter étudiant';
         },
         selectedFaculte() {
-            return this.facultes.find(f => f.nom === this.editedStudent.faculte);
+            return this.facultes.find(f => f.nomFac === this.editedStudent.faculte);
         },
         anneesDisponibles() {
             if (!this.selectedFaculte) return [];
@@ -100,7 +100,7 @@ export default {
                 return false;
             }
 
-            const faculte = this.facultes.find(f => f.nom === this.editedStudent.faculte);
+            const faculte = this.facultes.find(f => f.nomFac === this.editedStudent.faculte);
             if (faculte && this.editedStudent.annee > faculte.duree) {
                 this.showError(`L'année ne peut pas dépasser la durée de la faculté (${faculte.duree} années)`);
                 return false;
@@ -155,8 +155,8 @@ export default {
             <label>Faculté:</label>
             <select v-model="editedStudent.faculte" class="select-input" @change="onFaculteChange">
                 <option value="">Choisir une faculté</option>
-                <option v-for="faculte in facultes" :key="faculte.id" :value="faculte.nom">
-                    {{ faculte.nom }} ({{ faculte.duree }} ans)
+                <option v-for="faculte in facultes" :key="faculte.id" :value="faculte.nomFac">
+                    {{ faculte.nomFac }} ({{ faculte.duree }} ans)
                 </option>
             </select>
         </div>
@@ -170,7 +170,7 @@ export default {
                 </option>
             </select>
             <small class="help-text">
-                Faculté: {{ selectedFaculte?.nom }} - Durée: {{ selectedFaculte?.duree }} années
+                Faculté: {{ selectedFaculte?.nomFac }} - Durée: {{ selectedFaculte?.duree }} années
             </small>
         </div>
 

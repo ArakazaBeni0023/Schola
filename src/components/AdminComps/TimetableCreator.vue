@@ -77,10 +77,10 @@ export default {
         },
 
         plagesSeChevauchent(debut1, fin1, debut2, fin2) {
-            const toMinutes = (time) => {
+            function toMinutes(time) {
                 const [heures, minutes] = time.split(':').map(Number);
                 return heures * 60 + minutes;
-            };
+            }
 
             const d1 = toMinutes(debut1);
             const f1 = toMinutes(fin1);
@@ -130,7 +130,7 @@ export default {
             if (!faculte) {
                 faculte = {
                     faculteId: this.faculteId,
-                    nomFaculte: this.facultes.find(f => f.id === this.faculteId)?.nom || '',
+                    nomFaculte: this.facultes.find(f => f.id === this.faculteId)?.nomFac || '',
                     horaires: []
                 };
                 horaires.push(faculte);
@@ -151,7 +151,7 @@ export default {
 
             const nouveauCours = {
                 coursId: this.coursId,
-                nomCours: cours.nom,
+                nomCours: cours.nomCours,
                 heureDebut: this.heureDebut,
                 heureFin: this.heureFin,
                 enseignant: this.enseignant,
@@ -187,29 +187,54 @@ export default {
         },
 
         trouverEnseignant() {
-            const coursId = this.coursId;
-            const faculteNom = this.facultes.find(f => f.id === this.faculteId)?.nom;
-            const annee = parseInt(this.anneeEtude);
+            this.enseignantAuto = '';
+            this.enseignant = '';
 
-            if (!coursId || !faculteNom || !annee) {
-                this.enseignantAuto = '';
-                this.enseignant = '';
+            if (!this.coursId || !this.faculteId || !this.anneeEtude) {
                 return;
             }
 
-            const prof = this.users.find(u => {
-                if (u.role !== 'professeur' || !u.affectations) return false;
-                return u.affectations.some(a =>
-                    a.nom === faculteNom &&
-                    a.annees.some(ann =>
-                        ann.annee === annee &&
-                        ann.cours.some(c => c.id === coursId)
-                    )
-                );
+            const faculte = this.facultes.find(f => f.id === this.faculteId);
+            const cours = this.coursDisponibles.find(c => c.id === this.coursId);
+
+            if (!faculte || !cours) {
+                return;
+            }
+
+            const faculteNom = faculte.nomFac;
+            const nomCours = cours.nomCours;
+            const annee = parseInt(this.anneeEtude);
+
+            const professeur = this.users.find(prof => {
+                if (prof.role !== 'professeur' || !prof.affectations) {
+                    return false;
+                }
+
+                return prof.affectations.some(affectation => {
+                    const nomFaculteNormalise = affectation.nom?.toLowerCase().trim();
+                    const faculteRechercheNormalisee = faculteNom.toLowerCase().trim();
+
+                    if (nomFaculteNormalise !== faculteRechercheNormalisee) {
+                        return false;
+                    }
+
+                    return affectation.annees?.some(anneeAffectation => {
+                        if (anneeAffectation.annee !== annee) {
+                            return false;
+                        }
+                        return anneeAffectation.cours?.some(coursAffecte =>
+                            coursAffecte.toLowerCase().trim() === nomCours.toLowerCase().trim()
+                        );
+                    });
+                });
             });
 
-            this.enseignantAuto = prof ? `${prof.prenom} ${prof.nom}` : '';
-            this.enseignant = this.enseignantAuto;
+            if (professeur) {
+                this.enseignantAuto = `${professeur.prenom} ${professeur.nom}`;
+                this.enseignant = this.enseignantAuto;
+            } else {
+                alert('Aucun professeur trouvé');
+            }
         },
 
         resetHeureFin() {
@@ -238,7 +263,7 @@ export default {
                 <label>Faculté:</label>
                 <select v-model="faculteId" @change="chargerAnneesEtCours" class="select-input">
                     <option value="">-- Sélectionner --</option>
-                    <option v-for="fac in facultes" :key="fac.id" :value="fac.id">{{ fac.nom }}</option>
+                    <option v-for="fac in facultes" :key="fac.id" :value="fac.id">{{ fac.nomFac }}</option>
                 </select>
             </div>
 
@@ -280,7 +305,7 @@ export default {
                 <label>Cours:</label>
                 <select v-model="coursId" @change="trouverEnseignant" class="select-input" :disabled="!anneeEtude">
                     <option value="">-- Sélectionner --</option>
-                    <option v-for="c in coursDisponibles" :key="c.id" :value="c.id">{{ c.nom }}</option>
+                    <option v-for="c in coursDisponibles" :key="c.id" :value="c.id">{{ c.nomCours }}</option>
                 </select>
             </div>
 

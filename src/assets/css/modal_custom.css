@@ -73,14 +73,13 @@
 }
 
 .btn-grp .delete-btn {
-    background-color: var(--color-danger-bg);
     color: var(--color-danger);
     border: 1px solid var(--color-danger);
 }
 
 .btn-grp .delete-btn:hover {
-    background-color: var(--color-danger);
-    color: var(--color-text-light);
+    background-color: var(--color-danger-bg);
+    color: var(--color-danger);
 }
 
 @keyframes modalmoveup {

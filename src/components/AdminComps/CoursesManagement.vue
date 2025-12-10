@@ -19,10 +19,7 @@ export default {
         if (savedFacultes) {
             this.facultes = JSON.parse(savedFacultes);
         } else {
-            this.facultes = [
-                { id: 1, nom: 'Faculté de Sciences', courses: [] },
-                { id: 2, nom: 'Faculté de Lettres', courses: [] },
-            ];
+            this.facultes = [];
             this.saveFacultes();
         }
     },
@@ -35,8 +32,8 @@ export default {
             const faculte = this.facultes.find(f => f.id === this.selectedFaculteId);
             if (faculte && this.newCourseName.trim()) {
                 faculte.courses.push({
-                    id: Date.now(),
-                    nom: this.newCourseName.trim(),
+                    id: 'crs_' + Date.now(),
+                    nomCours: this.newCourseName.trim(),
                     duree: this.newCourseDuration,
                     anneeEtude: this.newCourseAnneeEtude
                 });
@@ -50,7 +47,7 @@ export default {
 
         startEditing(course) {
             this.editingCourseId = course.id;
-            this.editedCourseName = course.nom;
+            this.editedCourseName = course.nomCours;
             this.editedCourseDuration = course.duree;
             this.editedCourseAnneeEtude = course.anneeEtude || 1;
         },
@@ -60,7 +57,7 @@ export default {
             if (faculte) {
                 const course = faculte.courses.find(c => c.id === this.editingCourseId);
                 if (course && this.editedCourseName.trim()) {
-                    course.nom = this.editedCourseName.trim();
+                    course.nomCours = this.editedCourseName.trim();
                     course.duree = this.editedCourseDuration;
                     course.anneeEtude = this.editedCourseAnneeEtude;
                     this.editingCourseId = null;
@@ -100,7 +97,7 @@ export default {
         <div class="courses-container">
             <div v-for="faculte in facultes" :key="faculte.id" class="course">
                 <div class="course-header">
-                    <h4>{{ faculte.nom }}</h4>
+                    <h4>{{ faculte.nomFac }}</h4>
                     <button class="add-btn bi-plus" @click="isAddingCourse = true; selectedFaculteId = faculte.id"
                         v-if="isAddingCourse === false || selectedFaculteId === faculte.id"></button>
 
@@ -129,8 +126,9 @@ export default {
                                 <button @click="confirmEdit(faculte.id)" class="save-btn bi-check-lg"></button>
                             </div>
                         </div>
-                        <div v-else>
-                            {{ course.nom }} ({{ course.duree }} semaines, {{ formatAnnee(course.anneeEtude) }} année )
+                        <div v-else class="course-infos">
+                            {{ course.nomCours }} ({{ course.duree }} semaines, {{ formatAnnee(course.anneeEtude) }}
+                            année )
                             <div class="crud-btns">
                                 <button class="edit bi-pencil" @click="startEditing(course)"></button>
                                 <button class="delete bi-trash" @click="deleteCourse(faculte.id, course.id)"></button>
@@ -149,11 +147,11 @@ export default {
 }
 
 .courses-container {
-    /* display: grid; */
-    /* grid-template-columns: repeat(4, 1fr); */
-    /* grid-template-rows: auto; */
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto;
+    /* display: flex;
+    flex-direction: column; */
     gap: .5rem;
 }
 
@@ -203,13 +201,20 @@ export default {
 .course-form {
     display: flex;
     flex-direction: column;
-    margin-top: 1.5rem;
     gap: .5rem;
 }
 
 .add-course-form {
-    width: 40%;
     margin-bottom: 1rem;
+}
+
+.modif-course-form {
+    width: 100%;
+    padding: .5rem;
+}
+
+.course-infos {
+    padding: .5rem;
 }
 
 .course-form input {
@@ -233,10 +238,10 @@ export default {
 
 .course .course-counts .counter-items {
     border: 1px solid var(--color-primary);
-    width: fit-content;
+    /* width: fit-content; */
     border-radius: 5px;
     font-size: 12px;
-    padding: 0.5rem 1rem;
+    /* padding: 0.5rem; */
     display: flex;
     align-items: center;
     overflow: hidden;

@@ -106,8 +106,8 @@ export default {
         <div class="student-overview-container-header">
             <select v-model="selectedFacultyFilter" class="select-input">
                 <option value="">Toutes les facultés</option>
-                <option v-for="faculte in facultes" :key="faculte.id" :value="faculte.nom">
-                    {{ faculte.nom }}
+                <option v-for="faculte in facultes" :key="faculte.id" :value="faculte.nomFac">
+                    {{ faculte.nomFac }}
                 </option>
             </select>
         </div>

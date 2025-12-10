@@ -172,14 +172,12 @@ export default {
             return this.grille[heure] && this.grille[heure][jour] ? this.grille[heure][jour] : [];
         },
 
-        // FONCTION MANQUANTE - CORRECTION DE L'ERREUR
         getCoursPourJour(jour) {
             const coursDuJour = [];
 
             this.heuresAffichees.forEach(heure => {
                 const coursPourHeure = this.getCoursPourCellule(heure, jour);
                 coursPourHeure.forEach(cours => {
-                    // Ne prendre que la première occurrence de chaque cours (heure de début)
                     if (cours.heureDebut === heure) {
                         coursDuJour.push(cours);
                     }
@@ -195,7 +193,6 @@ export default {
                 return;
             }
 
-            // Implémentation basique - à améliorer avec une librairie PDF
             const printContent = document.querySelector('.timetable-container').innerHTML;
             const originalContent = document.body.innerHTML;
 
@@ -208,6 +205,40 @@ export default {
 
         estPremiereHeure(heure, cours) {
             return heure === cours.heureDebut;
+        },
+
+        /* countTotalCours() {
+            let total = 0;
+
+            this.jours.forEach(jour => {
+                const coursDuJour = this.getCoursPourJour(jour);
+                total += coursDuJour.length;
+            });
+
+            return total;
+        }, */
+        countTotalCours() {
+            if (!this.grille || Object.keys(this.grille).length === 0) {
+                return 0;
+            }
+
+            let total = 0;
+            const coursDejaComptes = new Set();
+
+            this.jours.forEach(jour => {
+                this.heuresAffichees.forEach(heure => {
+                    const coursPourCellule = this.getCoursPourCellule(heure, jour);
+                    coursPourCellule.forEach(cours => {
+                        const cle = `${cours.coursId}_${jour}`;
+                        if (!coursDejaComptes.has(cle)) {
+                            coursDejaComptes.add(cle);
+                            total++;
+                        }
+                    });
+                });
+            });
+
+            return total;
         },
 
         // Gestion des notifications
@@ -255,13 +286,12 @@ export default {
             </div>
         </transition>
 
-
         <div class="form">
             <div class="form-group">
                 <label>Faculté:</label>
                 <select v-model="faculteId" @change="chargerAnnees" class="select-input">
                     <option value="">-- Sélectionner --</option>
-                    <option v-for="fac in facultes" :key="fac.id" :value="fac.id">{{ fac.nom }}</option>
+                    <option v-for="fac in facultes" :key="fac.id" :value="fac.id">{{ fac.nomFac }}</option>
                 </select>
             </div>
 
@@ -275,7 +305,7 @@ export default {
 
             <div class="actions">
                 <button @click="afficherEmploiDuTemps" :disabled="!hasData" class="btn-primary">
-                    Afficher l'emploi du temps
+                    Afficher l'horaire
                 </button>
                 <button @click="exporterPDF" :disabled="!hasData || Object.keys(grille).length === 0"
                     class="btn-secondary">
@@ -289,16 +319,16 @@ export default {
 
         <div v-if="Object.keys(grille).length > 0" class="timetable-container">
             <div class="header-info">
-                <h4>Emploi du temps - {{ faculteSelectionnee?.nom }} - {{ anneeEtude }}ère année</h4>
+                <h4>Emploi du temps - {{ faculteSelectionnee?.nomFac }} - {{ anneeEtude }}ère année</h4>
                 <small>Semaine du lundi au vendredi</small>
                 <div class="stats">
-                    <small>{{ countTotalCours() }} cours programmés</small>
+                    <small>Emploi du temps chargé</small>
                 </div>
             </div>
 
             <!-- Version Desktop -->
             <div class="table-wrapper">
-                <table class="desktop-view table-container">
+                <table class=" t-desktop-view table-container">
                     <thead>
                         <tr>
                             <th class="time-header"><i class="bi-clock"></i> Heure</th>
@@ -429,16 +459,11 @@ export default {
 }
 
 .timetable-container {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }
 
 .header-info {
-    background: #f8f9fa;
     padding: 1rem;
-    border-bottom: 1px solid #dee2e6;
     text-align: center;
 }
 
@@ -452,19 +477,23 @@ export default {
 }
 
 .table-wrapper {
-    overflow-x: auto;
+    overflow: auto;
+    max-height: 450px;
+}
+
+.t-desktop-view {
+    width: 100%;
 }
 
 .table-container {
     width: 100%;
     border-collapse: collapse;
-    min-width: 800px;
 }
 
 .time-header,
 .day-header {
-    background: #343a40;
-    color: white;
+    background: var(--color-primary);
+    color: var(--color-text-light);
     padding: 1rem;
     text-align: center;
     font-weight: bold;
@@ -486,11 +515,11 @@ export default {
     border: 1px solid #dee2e6;
     padding: 0.25rem;
     vertical-align: top;
-    min-width: 180px;
+    /* min-width: 180px; */
 }
 
 .course-item {
-    min-height: 60px;
+    /* min-height: 60px; */
     padding: 0.5rem;
 }
 
@@ -624,10 +653,10 @@ export default {
     .btn-secondary,
     .btn-tertiary {
         flex: 1;
-        min-width: 120px;
+        /* min-width: 120px; */
     }
 
-    .desktop-view {
+    .t-desktop-view {
         display: none;
     }
 

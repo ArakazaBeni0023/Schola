@@ -1,5 +1,5 @@
 <script>
-import RegistrationForm from './StudentComps/RegistrationForm.vue';
+// import RegistrationForm from './StudentComps/RegistrationForm.vue';
 import ScheduleCmp from './StudentComps/ScheduleCmp.vue';
 import GradesCmp from './StudentComps/GradesCmp.vue';
 import UpcomingEvents from './UpcomingEvents.vue';
@@ -8,7 +8,7 @@ import HeaderCmp from './HeaderCmp.vue';
 export default {
     name: 'StudentView',
     components: {
-        RegistrationForm,
+        // RegistrationForm,
         ScheduleCmp,
         GradesCmp,
         UpcomingEvents,
@@ -51,26 +51,34 @@ export default {
 
 <template>
     <div class="global-container">
-        <div class="left-side">
-            <HeaderCmp />
+        <HeaderCmp />
 
-            <h2 class="main-title">Espace Étudiant</h2>
+        <h2 class="main-title">Espace Étudiant</h2>
 
-            <!-- Registration Form  -->
-            <RegistrationForm v-if="!hasUsedRegistrationForm" @registration-complete="onRegistrationComplete" />
+        <VCalendar class="calendrier" :attributes="attributes" />
+        <UpcomingEvents class="UpcomingEvents" :userEmail="currentUser?.email" :isProfesseur="false" :key="eventsKey" />
 
-            <!-- Schedule -->
-            <ScheduleCmp />
+        <!-- Schedule -->
+        <ScheduleCmp />
 
-            <!-- Grades -->
-            <GradesCmp />
-            <!----------------------- displaying for mobile only -->
-            <VCalendar class="calendrier" :attributes="attributes" />
-            <UpcomingEvents class="UpCommingEvents" :userEmail="currentUser?.email" :isProfesseur="true" />
-        </div>
-        <div class="right-side">
-            <VCalendar class="calendrier" :attributes="attributes" />
-            <UpcomingEvents class="UpCommingEvents" :userEmail="currentUser?.email" :isProfesseur="false" />
-        </div>
+        <!-- Grades -->
+        <GradesCmp />
+        <!----------------------- displaying for mobile only -->
     </div>
 </template>
+
+<style scoped>
+.global-container {
+    display: flex;
+    flex-direction: column;
+    padding-block: 1rem;
+    padding-inline-end: 1rem;
+}
+
+.UpcomingEvents {
+    background: var(--color-surface);
+    border: 2px solid var(--color-primary);
+    padding: 1rem;
+    border-radius: 15px;
+}
+</style>

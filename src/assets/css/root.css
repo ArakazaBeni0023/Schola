@@ -1,87 +1,88 @@
 :root {
-    /*Couleur principale – titres, logo, header */
-    --color-primary: #146EB4;
-    /* Variante claire – hover, fonds secondaires */
-    --color-primary-light: #5DA2DE;
-    /* Variante foncée – footer, boutons actifs */
-    --color-primary-dark: #0F4C80;
+  /*Couleur principale – titres, logo, header */
+  --color-primary: #146eb4;
+  /* Variante claire – hover, fonds secondaires */
+  --color-primary-light: #5da2de;
+  /* Variante foncée – footer, boutons actifs */
+  --color-primary-dark: #0f4c80;
 
-    /* Couleur secondaire – liens, icônes, accents */
-    --color-secondary: #0F8ED4;
-    /* Accent – boutons "call to action", alertes */
-    --color-accent: #6ac6ff;
+  /* Couleur secondaire – liens, icônes, accents */
+  --color-secondary: #0f8ed4;
+  /* Accent – boutons "call to action", alertes */
+  --color-accent: #6ac6ff;
 
-    /* Arrière-plan général du site */
-    --color-background: #F9F9F9;
-    /* Cartes, blocs de contenu, modales */
-    --color-surface: #FFFFFF;
-    /* Texte principal (titres, paragraphes) */
-    --color-text: #146EB4;
-    /* Texte clair sur fond foncé (boutons, overlays) */
-    --color-text-light: #FFFFFF;
-    /* Texte secondaire – sous-titres, infos discrètes */
-    --color-muted: #888888;
+  /* Arrière-plan général du site */
+  --color-background: #f9f9f9;
+  /* Cartes, blocs de contenu, modales */
+  --color-surface: #ffffff;
+  /* Texte principal (titres, paragraphes) */
+  --color-text: #146eb4;
+  /* Texte clair sur fond foncé (boutons, overlays) */
+  --color-text-light: #ffffff;
+  /* Texte secondaire – sous-titres, infos discrètes */
+  --color-muted: #888888;
 
-    --color-dark: #212121;
-    --hover-lw: #ebfaff;
-    --color-danger: #dc3545;
-    --color-danger-bg: #dc354515;
-    --color-success: rgb(69, 166, 27);
-    --color-success-bg: #5be22115;
-    --color-warning: #FFD900;
-    --color-warning-bg: #ffd90015;
+  --color-dark: #212121;
+  --hover-lw: #ebfaff;
+  --hover-lw-2: #c7f0fd;
 
-    --shadow: 0px 1px 9px #146eb461;
-    --shadow-2: 0px 1px 9px var(--color-muted);
-    --shadow-3: 0px 1px 9px #52b6f54f;
-    --shadow-4: 0px 1px 9px #aac0ce4f;
+  --color-danger: #dc3545;
+  --color-danger-bg: #dc354515;
+  --color-success: rgb(69, 166, 27);
+  --color-success-bg: #5be22115;
+  --color-warning: #ffd900;
+  --color-warning-bg: #ffd90015;
+
+  --shadow: 0px 1px 9px #146eb461;
+  --shadow-2: 0px 1px 9px var(--color-muted);
+  --shadow-3: 0px 1px 9px #52b6f54f;
+  --shadow-4: 0px 1px 9px #aac0ce4f;
 }
 
 /* scrollbar */
 ::-webkit-scrollbar {
-    width: .6rem;
+  width: 0.6rem;
 }
 
 ::-webkit-scrollbar-track {
-    background-color: var(--hover-lw);
-    margin: 2px;
-    border-radius: 50px;
+  background-color: var(--hover-lw);
+  margin: 2px;
+  border-radius: 50px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--color-secondary);
-    transition: background .5s ease;
-    border-radius: 50px;
-
+  background: var(--color-secondary);
+  transition: background 0.5s ease;
+  border-radius: 50px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-primary);
+  background: var(--color-primary);
 }
 
 .bg-danger {
-    background-color: var(--color-danger);
+  background-color: var(--color-danger);
 }
 
 .bg-primary {
-    background-color: var(--color-primary);
+  background-color: var(--color-primary);
 }
 
 .bg-secondary {
-    background-color: var(--color-warning);
+  background-color: var(--color-warning);
 }
 
 .bg-success {
-    color: var(--color-success);
-    /* background-color: var(--color-success); */
+  color: var(--color-success);
+  /* background-color: var(--color-success); */
 }
 
 .bg-warning {
-    color: var(--color-muted);
-    /* background-color: var(--color-success); */
+  color: var(--color-muted);
+  /* background-color: var(--color-success); */
 }
 
 .bg-light {
-    color: var(--color-text-light);
-    /* background-color: var(--color-success); */
+  color: var(--color-text-light);
+  /* background-color: var(--color-success); */
 }

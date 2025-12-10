@@ -34,8 +34,8 @@ export default {
         addFaculty() {
             if (this.newFacultyName.trim()) {
                 this.facultes.push({
-                    id: Date.now(),
-                    nom: this.newFacultyName.trim(),
+                    id: 'fc_' + Date.now(),
+                    nomFac: this.newFacultyName.trim(),
                     duree: this.newFacultyDuration,
                     courses: [],
                 });
@@ -115,7 +115,7 @@ export default {
                     </div>
                 </div>
                 <div v-else class="faculty-view">
-                    <h4>{{ faculte.nom }}</h4>
+                    <h4>{{ faculte.nomFac }}</h4>
                     <span class="cursus">
                         <i class="bi bi-calendar-range-fill"></i> {{ faculte.duree }} ans
                     </span>
@@ -160,6 +160,7 @@ export default {
 .faculty-management-container-header {
     gap: .5rem;
     padding: 0;
+    flex-wrap: wrap;
 }
 
 .faculty-management-container-header .input {

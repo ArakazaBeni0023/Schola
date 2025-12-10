@@ -160,7 +160,7 @@ export default {
                     <select v-model="academicForm.faculteId" @change="updateAnnees" required class="select-input">
                         <option value="">Sélectionner une faculté</option>
                         <option v-for="faculte in facultes" :key="faculte.id" :value="faculte.id">
-                            {{ faculte.nom }}
+                            {{ faculte.nomFac }}
                         </option>
                     </select>
                 </div>

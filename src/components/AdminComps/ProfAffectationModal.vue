@@ -86,7 +86,7 @@ export default {
         },
 
         getCoursesForFacultyAndYear(faculteNom, annee) {
-            const fac = this.facultes.find(f => f.nom === faculteNom);
+            const fac = this.facultes.find(f => f.nomFac === faculteNom);
             return fac?.courses?.filter(c => c.anneeEtude === annee) || [];
         },
 
@@ -104,7 +104,7 @@ export default {
         },
 
         chargerAnneesEtCours(faculteNom) {
-            const fac = this.facultes.find(f => f.nom === faculteNom);
+            const fac = this.facultes.find(f => f.nomFac === faculteNom);
             if (fac && fac.duree) {
                 this.anneesDisponibles = Array.from({ length: fac.duree }, (_, i) => i + 1);
             }
@@ -230,8 +230,8 @@ export default {
             <select v-model="tempAffectation.nom" class="select-input"
                 @change="chargerAnneesEtCours(tempAffectation.nom)">
                 <option disabled value="">Choisir une faculté</option>
-                <option v-for="fac in facultes" :key="fac.id" :value="fac.nom">
-                    {{ fac.nom }}
+                <option v-for="fac in facultes" :key="fac.id" :value="fac.nomFac">
+                    {{ fac.nomFac }}
                 </option>
             </select>
         </div>
@@ -258,8 +258,8 @@ export default {
                     <select :value="tempAffectation.annees.find(a => a.annee === an).cours" multiple
                         class="select-input" @change="event => updateCoursSelection(an, event.target.selectedOptions)">
                         <option v-for="c in getCoursesForFacultyAndYear(tempAffectation.nom, an)" :key="c.id"
-                            :value="c.nom">
-                            {{ c.nom }}
+                            :value="c.nomCours">
+                            {{ c.nomCours }}
                         </option>
                     </select>
                     <small v-if="getCoursesForFacultyAndYear(tempAffectation.nom, an).length === 0"
