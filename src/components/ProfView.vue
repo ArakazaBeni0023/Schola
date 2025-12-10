@@ -18,8 +18,12 @@ export default {
         return {
             selectedCourse: null,
             currentUser: null,
-            calendarAttributes: [],
-            calendarEvents: [],
+            attributes: [
+                {
+                    highlight: true,
+                    dates: new Date(),
+                },
+            ],
             notifications: [],
             notificationId: 0,
             eventsKey: 0
@@ -143,8 +147,7 @@ export default {
             <HeaderCmp />
             <h2 class="main-title">Espace Professeur</h2>
 
-            <VCalendar v-if="!selectedCourse" class="calendrier" :attributes="calendarAttributes"
-                @dayclick="handleDayClick" />
+            <VCalendar v-if="!selectedCourse" class="calendrier" :attributes="attributes" />
             <UpcomingEvents v-if="!selectedCourse" class="UpcomingEvents" :userEmail="currentUser?.email"
                 :isProfesseur="true" :key="eventsKey" />
             <NotesCmp v-if="!selectedCourse" class="NotesCmp" />
@@ -154,8 +157,7 @@ export default {
         </div>
 
         <div class="right-side">
-            <VCalendar class="calendrier" :attributes="calendarAttributes" @dayclick="handleDayClick" />
-
+            <VCalendar class="calendrier" :attributes="attributes" />
             <UpcomingEvents class="UpcomingEvents" :userEmail="currentUser?.email" :isProfesseur="true"
                 :key="eventsKey" />
 

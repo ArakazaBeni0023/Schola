@@ -51,34 +51,41 @@ export default {
 
 <template>
     <div class="global-container">
-        <HeaderCmp />
+        <div class="left-side">
+            <HeaderCmp />
 
-        <h2 class="main-title">Espace Étudiant</h2>
+            <h2 class="main-title">Espace Étudiant</h2>
 
-        <VCalendar class="calendrier" :attributes="attributes" />
-        <UpcomingEvents class="UpcomingEvents" :userEmail="currentUser?.email" :isProfesseur="false" :key="eventsKey" />
+            <VCalendar class="calendrier" :attributes="attributes" />
+            <UpcomingEvents class="UpcomingEvents" :userEmail="currentUser?.email" :isProfesseur="false"
+                :key="eventsKey" />
 
-        <!-- Schedule -->
-        <ScheduleCmp />
-
-        <!-- Grades -->
-        <GradesCmp />
-        <!----------------------- displaying for mobile only -->
+            <!-- Schedule -->
+            <ScheduleCmp />
+            <!-- Grades -->
+            <GradesCmp />
+        </div>
+        <div class="right-side">
+            <VCalendar class="calendrier" :attributes="attributes" />
+            <UpcomingEvents class="UpcomingEvents" :userEmail="currentUser?.email" :isProfesseur="false"
+                :key="eventsKey" />
+        </div>
     </div>
 </template>
 
 <style scoped>
-.global-container {
+/* .global-container {
     display: flex;
     flex-direction: column;
     padding-block: 1rem;
     padding-inline-end: 1rem;
-}
+} */
 
-.UpcomingEvents {
+.left-side .UpcomingEvents {
     background: var(--color-surface);
     border: 2px solid var(--color-primary);
     padding: 1rem;
     border-radius: 15px;
+    display: none;
 }
 </style>
